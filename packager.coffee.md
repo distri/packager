@@ -4,7 +4,7 @@ Packager
 The main responsibilities will be bundling dependencies, and creating the
 package.
 
-    Packager = ->
+    Packager =
       collectDependencies: (dependencies) ->
         names = Object.keys(dependencies)
 
