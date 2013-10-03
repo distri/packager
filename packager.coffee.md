@@ -127,7 +127,7 @@ Helpers
 Create a rejected deferred with the given message.
 
     reject = (message) ->
-      Deferred().reject([message])
+      Deferred().reject(message)
 
 A standalone html page for a package.
 
