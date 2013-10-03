@@ -76,7 +76,7 @@
   module.exports = Packager;
 
   reject = function(message) {
-    return Deferred().reject([message]);
+    return Deferred().reject(message);
   };
 
   html = function(pkg) {
