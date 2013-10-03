@@ -1,5 +1,5 @@
 (function() {
-  var Packager, dependencyScripts, jsonpWrapper, makeScript, packageWrapper, program, reject;
+  var Packager, cacheManifest, dependencyScripts, html, jsonpWrapper, makeScript, packageWrapper, program, reject;
 
   Packager = {
     collectDependencies: function(dependencies) {
@@ -38,16 +38,28 @@
       });
     },
     standAlone: function(pkg) {
-      var distribution, entryPoint, html, json, source;
-      source = pkg.source, distribution = pkg.distribution, entryPoint = pkg.entryPoint;
-      html = "<!doctype html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" + (dependencyScripts(pkg.remoteDependencies)) + "\n</head>\n<body>\n<script>\n" + (packageWrapper(pkg, "require('./" + entryPoint + "')")) + "\n<\/script>\n</body>\n</html>";
-      json = JSON.stringify(pkg, null, 2);
-      return {
-        html: html,
-        js: program(pkg),
-        json: json,
-        jsonp: jsonpWrapper(pkg.repository, json)
+      var add, base, branch, files, json, repository;
+      repository = pkg.repository;
+      branch = repository.branch;
+      if (branch === repository.default_branch) {
+        base = "";
+      } else {
+        base = "" + branch + "/";
+      }
+      files = [];
+      add = function(path, content) {
+        return files.push({
+          path: path,
+          content: content
+        });
       };
+      add("" + base + "index.html", html(pkg));
+      add("" + base + "manifest.appcache", cacheManifest(pkg));
+      json = JSON.stringify(pkg, null, 2);
+      add("" + branch + ".js", program(pkg));
+      add("" + branch + ".json", json);
+      add("" + branch + ".jsonp", jsonpWrapper(repository, json));
+      return files;
     },
     testScripts: function(pkg) {
       var distribution, testProgram;
@@ -64,23 +76,29 @@
   module.exports = Packager;
 
   reject = function(message) {
-    return Deferred().reject([message]);
+    return Deferred().reject(message);
   };
 
-  makeScript = function(attrs) {
-    return $("<script>", attrs).prop('outerHTML');
+  html = function(pkg) {
+    return "<!DOCTYPE html>\n<html manifest=\"manifest.appcache?" + (+(new Date)) + "\">\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" + (dependencyScripts(pkg.remoteDependencies)) + "\n</head>\n<body>\n<script>\n" + (packageWrapper(pkg, "require('./" + pkg.entryPoint + "')")) + "\n<\/script>\n</body>\n</html>";
+  };
+
+  cacheManifest = function(pkg) {
+    return "CACHE MANIFEST\n# " + (+(new Date)) + "\n\nCACHE:\nindex.html\n" + ((pkg.remoteDependencies || []).join("\n")) + "\n\nNETWORK:\nhttps://*\nhttp://*\n*";
+  };
+
+  makeScript = function(src) {
+    var script;
+    script = document.createElement("script");
+    script.src = src;
+    return script.outerHTML;
   };
 
   dependencyScripts = function(remoteDependencies) {
     if (remoteDependencies == null) {
       remoteDependencies = [];
     }
-    return remoteDependencies.map(function(src) {
-      return makeScript({
-        "class": "env",
-        src: src
-      });
-    }).join("\n");
+    return remoteDependencies.map(makeScript).join("\n");
   };
 
   program = function(_arg) {
@@ -103,3 +121,5 @@
   };
 
 }).call(this);
+
+//# sourceURL=packager.coffee
