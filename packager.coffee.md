@@ -5,26 +5,15 @@ The main responsibilities will be bundling dependencies, and creating the
 package.
 
     Packager =
-      collectDependencies: (dependencies) ->
-        names = Object.keys(dependencies)
-
-        Deferred.when(names.map (name) ->
-          value = dependencies[name]
-
-          if typeof value is "string"
 
 If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.
 
-            if value.startsWith("http")
-              $.getJSON(value)
-            else
-
-Handle a Github repo dependency. Something like `STRd6/issues:master`. This uses
-JSONP to load the package from the gh-pages branch of the given repo.
+We also handle a Github repo dependency. Something like `STRd6/issues:master`. 
+This uses JSONP to load the package from the gh-pages branch of the given repo.
 
 `STRd6/issues:master` will be accessible at `http://strd6.github.io/issues/master.jsonp`.
-The callback is the same as the repo info string: `window["STRd6/issues:master"](... JSON DATA ...)`
+The callback is the same as the repo info string: `window["STRd6/issues:master"](... DATA ...)`
 
 Why all the madness? Github pages doesn't allow CORS right now, so we need to use
 the JSONP hack to work around it. Because the files are static we can't allow the
@@ -32,6 +21,17 @@ server to generate a wrapper in response to our query string param so we need to
 work out a unique one per file ahead of time. The `<user>/<repo>:<ref>` string is
 unique for all our packages so we use it to determine the URL and name callback.
 
+      collectDependencies: (dependencies) ->
+        names = Object.keys(dependencies)
+
+        Deferred.when(names.map (name) ->
+          value = dependencies[name]
+
+          if typeof value is "string"
+          
+            if value.startsWith("http")
+              $.getJSON(value)
+            else
               if (match = value.match(/([^\/]*)\/([^\:]*)\:(.*)/))
                 [callback, user, repo, branch] = match
 
@@ -62,29 +62,44 @@ Create the standalone components of this package. An html page that loads the
 main entry point for demonstration purposes and a json package that can be
 used as a dependency in other packages.
 
-      standAlone: (pkg) ->
-        {source, distribution, entryPoint} = pkg
+The html page is named `index.html` and is in the folder of the ref, or the root
+if our ref is the default branch.
 
-        html = """
-          <!doctype html>
-          <head>
-          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-          #{dependencyScripts(pkg.remoteDependencies)}
-          </head>
-          <body>
-          <script>
-          #{packageWrapper(pkg, "require('./#{entryPoint}')")}
-          <\/script>
-          </body>
-          </html>
-        """
+Docs are generated and placed in `docs` directory as a sibling to `index.html`.
+
+An application manifest is served up as a sibling to `index.html` as well.
+
+The `.js`, `.json`, and `.jsonp` build products are placed into the root level,
+as siblings to the folder containing `index.html`. If this branch is the default
+then these build products are placed as siblings to `index.html`
+
+      standAlone: (pkg) ->
+        repository = pkg.repository
+        branch = repository.branch
+
+        if branch is repository.default_branch
+          base = ""
+        else
+          base = "#{branch}/"
+
+        files = []
+        add = (path, content) ->
+          files.push
+            path: path
+            content: content
+
+        add "#{base}index.html", html(pkg)
+        add "#{base}manifest.appcache", cacheManifest(pkg)
 
         json = JSON.stringify(pkg, null, 2)
 
-        html: html
-        js: program(pkg)
-        json: json
-        jsonp: jsonpWrapper(pkg.repository, json)
+        add "#{branch}.js", program(pkg)
+        add "#{branch}.json", json
+        add "#{branch}.jsonp", jsonpWrapper(repository, json)
+        
+        # TODO: Add docs
+
+        return files
 
 Generates a standalone page for testing the app.
 
@@ -112,25 +127,57 @@ Helpers
 Create a rejected deferred with the given message.
 
     reject = (message) ->
-      Deferred().reject([message])
+      Deferred().reject(message)
 
-`makeScript` returns a string representation of a script tag. Don't use this
-with tons of stuff stuck inside as html, it gets messed up. Using with src is
-fine though.
+A standalone html page for a package.
 
-    makeScript = (attrs) ->
-      $("<script>", attrs).prop('outerHTML')
+    html = (pkg) ->
+      """
+        <!DOCTYPE html>
+        <html manifest="manifest.appcache?#{+new Date}">
+        <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        #{dependencyScripts(pkg.remoteDependencies)}
+        </head>
+        <body>
+        <script>
+        #{packageWrapper(pkg, "require('./#{pkg.entryPoint}')")}
+        <\/script>
+        </body>
+        </html>
+      """
+
+An HTML5 cache manifest for a package.
+
+    cacheManifest = (pkg) ->
+      """
+        CACHE MANIFEST
+        # #{+ new Date}
+
+        CACHE:
+        index.html
+        #{(pkg.remoteDependencies or []).join("\n")}
+
+        NETWORK:
+        https://*
+        http://*
+        *
+      """
+
+`makeScript` returns a string representation of a script tag that has a src
+attribute.
+
+    makeScript = (src) ->
+      script = document.createElement("script")
+      script.src = src
+
+      return script.outerHTML
 
 `dependencyScripts` returns a string containing the script tags that are
-the dependencies of this build.
+the remote script dependencies of this build.
 
     dependencyScripts = (remoteDependencies=[]) ->
-      remoteDependencies.map (src) ->
-        makeScript
-          class: "env"
-          src: src
-
-      .join("\n")
+      remoteDependencies.map(makeScript).join("\n")
 
 A standalone JS program for the package. Does not use `require` and is only
 suitable for script style dependencies.
