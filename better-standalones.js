@@ -84,7 +84,7 @@
   };
 
   cacheManifest = function(pkg) {
-    return "CACHE MANIFEST\n# " + (+(new Date)) + "\n\nCACHE:\nindex.html\n" + ((pkg.remoteDependencies || []).join("\n"));
+    return "CACHE MANIFEST\n# " + (+(new Date)) + "\n\nCACHE:\nindex.html\n" + ((pkg.remoteDependencies || []).join("\n")) + "\n\nNETWORK:\nhttps://*\nhttp://*\n*";
   };
 
   makeScript = function(src) {
