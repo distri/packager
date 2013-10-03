@@ -80,7 +80,7 @@
   };
 
   html = function(pkg) {
-    return "<!doctype html manifest=\"manifest.appcache\">\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" + (dependencyScripts(pkg.remoteDependencies)) + "\n</head>\n<body>\n<script>\n" + (packageWrapper(pkg, "require('./" + pkg.entryPoint + "')")) + "\n<\/script>\n</body>\n</html>";
+    return "<!DOCTYPE html>\n<html manifest=\"manifest.appcache\">\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" + (dependencyScripts(pkg.remoteDependencies)) + "\n</head>\n<body>\n<script>\n" + (packageWrapper(pkg, "require('./" + pkg.entryPoint + "')")) + "\n<\/script>\n</body>\n</html>";
   };
 
   cacheManifest = function(pkg) {
