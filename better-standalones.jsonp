@@ -1,5 +1,5 @@
-window["STRd6/packager:v0.3.0-alpha.5"]({
-  "version": "0.3.0-alpha.6",
+window["STRd6/packager:v0.3.0-alpha.6"]({
+  "version": "0.3.0",
   "source": {
     "LICENSE": {
       "path": "LICENSE",
@@ -22,7 +22,7 @@ window["STRd6/packager:v0.3.0-alpha.5"]({
     "pixie.cson": {
       "path": "pixie.cson",
       "mode": "100644",
-      "content": "version: \"0.3.0-alpha.6\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"//code.jquery.com/jquery-1.10.1.min.js\"\n  \"http://strd6.github.io/tempest/javascripts/envweb.js\"\n  \"http://strd6.github.io/require/v0.2.0.js\"\n]\n",
+      "content": "version: \"0.3.0\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"//code.jquery.com/jquery-1.10.1.min.js\"\n  \"http://strd6.github.io/tempest/javascripts/envweb.js\"\n  \"http://strd6.github.io/require/v0.2.1.js\"\n]\n",
       "type": "blob"
     },
     "test/packager.coffee": {
@@ -40,7 +40,7 @@ window["STRd6/packager:v0.3.0-alpha.5"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.3.0-alpha.6\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"//code.jquery.com/jquery-1.10.1.min.js\",\"http://strd6.github.io/tempest/javascripts/envweb.js\",\"http://strd6.github.io/require/v0.2.0.js\"]};",
+      "content": "module.exports = {\"version\":\"0.3.0\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"//code.jquery.com/jquery-1.10.1.min.js\",\"http://strd6.github.io/tempest/javascripts/envweb.js\",\"http://strd6.github.io/require/v0.2.1.js\"]};",
       "type": "blob"
     },
     "test/packager": {
@@ -54,7 +54,7 @@ window["STRd6/packager:v0.3.0-alpha.5"]({
   "remoteDependencies": [
     "//code.jquery.com/jquery-1.10.1.min.js",
     "http://strd6.github.io/tempest/javascripts/envweb.js",
-    "http://strd6.github.io/require/v0.2.0.js"
+    "http://strd6.github.io/require/v0.2.1.js"
   ],
   "repository": {
     "id": 13223375,
@@ -145,7 +145,7 @@ window["STRd6/packager:v0.3.0-alpha.5"]({
       "pull": true
     },
     "network_count": 0,
-    "branch": "v0.3.0-alpha.5",
+    "branch": "v0.3.0-alpha.6",
     "defaultBranch": "master",
     "includedModules": [
       "Bindable"

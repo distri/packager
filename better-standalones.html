@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <script class="env" src="//code.jquery.com/jquery-1.10.1.min.js"></script>
 <script class="env" src="http://strd6.github.io/tempest/javascripts/envweb.js"></script>
-<script class="env" src="http://strd6.github.io/require/v0.2.0.js"></script>
+<script class="env" src="http://strd6.github.io/require/v0.2.1.js"></script>
 </head>
 <body>
 <script>
@@ -11,7 +11,7 @@
 var require = Require.generateFor(PACKAGE);
 require('./packager')
 })({
-  "version": "0.3.0-alpha.6",
+  "version": "0.3.0",
   "source": {
     "LICENSE": {
       "path": "LICENSE",
@@ -34,7 +34,7 @@ require('./packager')
     "pixie.cson": {
       "path": "pixie.cson",
       "mode": "100644",
-      "content": "version: \"0.3.0-alpha.6\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"//code.jquery.com/jquery-1.10.1.min.js\"\n  \"http://strd6.github.io/tempest/javascripts/envweb.js\"\n  \"http://strd6.github.io/require/v0.2.0.js\"\n]\n",
+      "content": "version: \"0.3.0\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"//code.jquery.com/jquery-1.10.1.min.js\"\n  \"http://strd6.github.io/tempest/javascripts/envweb.js\"\n  \"http://strd6.github.io/require/v0.2.1.js\"\n]\n",
       "type": "blob"
     },
     "test/packager.coffee": {
@@ -52,7 +52,7 @@ require('./packager')
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.3.0-alpha.6\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"//code.jquery.com/jquery-1.10.1.min.js\",\"http://strd6.github.io/tempest/javascripts/envweb.js\",\"http://strd6.github.io/require/v0.2.0.js\"]};",
+      "content": "module.exports = {\"version\":\"0.3.0\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"//code.jquery.com/jquery-1.10.1.min.js\",\"http://strd6.github.io/tempest/javascripts/envweb.js\",\"http://strd6.github.io/require/v0.2.1.js\"]};",
       "type": "blob"
     },
     "test/packager": {
@@ -66,7 +66,7 @@ require('./packager')
   "remoteDependencies": [
     "//code.jquery.com/jquery-1.10.1.min.js",
     "http://strd6.github.io/tempest/javascripts/envweb.js",
-    "http://strd6.github.io/require/v0.2.0.js"
+    "http://strd6.github.io/require/v0.2.1.js"
   ],
   "repository": {
     "id": 13223375,
@@ -157,7 +157,7 @@ require('./packager')
       "pull": true
     },
     "network_count": 0,
-    "branch": "v0.3.0-alpha.5",
+    "branch": "v0.3.0-alpha.6",
     "defaultBranch": "master",
     "includedModules": [
       "Bindable"
