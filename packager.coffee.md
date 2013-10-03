@@ -133,7 +133,8 @@ A standalone html page for a package.
 
     html = (pkg) ->
       """
-        <!doctype html manifest="manifest.appcache">
+        <!DOCTYPE html>
+        <html manifest="manifest.appcache">
         <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         #{dependencyScripts(pkg.remoteDependencies)}
