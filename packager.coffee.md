@@ -74,7 +74,7 @@ as siblings to the folder containing `index.html`. If this branch is the default
 then these build products are placed as siblings to `index.html`
 
       standAlone: (pkg) ->
-        {source, distribution, entryPoint, repository} = pkg
+        repository = pkg.repository
         branch = repository.branch
 
         if branch is repository.default_branch
@@ -140,7 +140,7 @@ A standalone html page for a package.
         </head>
         <body>
         <script>
-        #{packageWrapper(pkg, "require('./#{entryPoint}')")}
+        #{packageWrapper(pkg, "require('./#{pkg.entryPoint}')")}
         <\/script>
         </body>
         </html>
