@@ -157,6 +157,11 @@ An HTML5 cache manifest for a package.
         CACHE:
         index.html
         #{(pkg.remoteDependencies or []).join("\n")}
+
+        NETWORK:
+        https://*
+        http://*
+        *
       """
 
 `makeScript` returns a string representation of a script tag that has a src
