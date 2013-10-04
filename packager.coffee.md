@@ -9,7 +9,7 @@ package.
 If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.
 
-We also handle a Github repo dependency. Something like `STRd6/issues:master`. 
+We also handle a Github repo dependency. Something like `STRd6/issues:master`.
 This uses JSONP to load the package from the gh-pages branch of the given repo.
 
 `STRd6/issues:master` will be accessible at `http://strd6.github.io/issues/master.jsonp`.
@@ -21,14 +21,13 @@ server to generate a wrapper in response to our query string param so we need to
 work out a unique one per file ahead of time. The `<user>/<repo>:<ref>` string is
 unique for all our packages so we use it to determine the URL and name callback.
 
-      collectDependencies: (dependencies) ->
+      collectDependencies: (dependencies, cachedDependencies={}) ->
         names = Object.keys(dependencies)
 
         Deferred.when(names.map (name) ->
           value = dependencies[name]
 
           if typeof value is "string"
-          
             if value.startsWith("http")
               $.getJSON(value)
             else
@@ -37,11 +36,14 @@ unique for all our packages so we use it to determine the URL and name callback.
 
                 user = user.toLowerCase()
 
-                $.ajax
-                  url: "http://#{user}.github.io/#{repo}/#{branch}.jsonp"
-                  dataType: "jsonp"
-                  jsonpCallback: callback
-                  cache: true
+                if cachedDependency = lookupCache(cachedDependencies, "#{user}/#{repo}", branch)
+                  cachedDependency
+                else
+                  $.ajax
+                    url: "http://#{user}.github.io/#{repo}/#{branch}.jsonp"
+                    dataType: "jsonp"
+                    jsonpCallback: callback
+                    cache: true
               else
                 reject """
                   Failed to parse repository info string #{value}, be sure it's in the
@@ -96,7 +98,7 @@ then these build products are placed as siblings to `index.html`
         add "#{branch}.js", program(pkg)
         add "#{branch}.json", json
         add "#{branch}.jsonp", jsonpWrapper(repository, json)
-        
+
         # TODO: Add docs
 
         return files
@@ -209,3 +211,15 @@ can be used for generating standalone HTML pages, scripts, and tests.
         #{code}
         })(#{JSON.stringify(pkg, null, 2)});
       """
+
+Lookup a package from a cached list of packages.
+
+    lookupCached = (cache, fullName, branch) ->
+      name = Object.keys(cache).select (key) ->
+        repository = cache[name].repository
+        
+        repository.full_name is fullName and repository.branch is branch
+      .first()
+
+      if name
+        cache[name]
