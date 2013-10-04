@@ -34,8 +34,6 @@ unique for all our packages so we use it to determine the URL and name callback.
               if (match = value.match(/([^\/]*)\/([^\:]*)\:(.*)/))
                 [callback, user, repo, branch] = match
 
-                user = user.toLowerCase()
-
                 if cachedDependency = lookupCached(cachedDependencies, "#{user}/#{repo}", branch)
                   [cachedDependency]
                 else
@@ -216,7 +214,7 @@ Lookup a package from a cached list of packages.
 
     lookupCached = (cache, fullName, branch) ->
       name = Object.keys(cache).select (key) ->
-        repository = cache[name].repository
+        repository = cache[key].repository
         
         console.log "checking #{fullName}:#{branch} vs #{repository.full_name}"
 
@@ -226,4 +224,19 @@ Lookup a package from a cached list of packages.
       console.log name
 
       if name
-        cache[name]
+        # Require annotates packages with a cache, let's omit that
+        # TODO: Ideally this omit wouldn't be necessary
+        omit(cache[name], "cache")
+
+Helpers
+-------
+
+Omit
+
+    omit = (object, keysToOmit...) ->
+      copy = {}
+      Object.keys(object).forEach (key) ->
+        if object.hasOwnProperty(key) and !keysToOmit.include(key)
+          copy[key] = object[key]
+
+      return copy
