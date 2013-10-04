@@ -36,8 +36,8 @@ unique for all our packages so we use it to determine the URL and name callback.
 
                 user = user.toLowerCase()
 
-                if cachedDependency = lookupCache(cachedDependencies, "#{user}/#{repo}", branch)
-                  cachedDependency
+                if cachedDependency = lookupCached(cachedDependencies, "#{user}/#{repo}", branch)
+                  [cachedDependency]
                 else
                   $.ajax
                     url: "http://#{user}.github.io/#{repo}/#{branch}.jsonp"
@@ -218,8 +218,12 @@ Lookup a package from a cached list of packages.
       name = Object.keys(cache).select (key) ->
         repository = cache[name].repository
         
+        console.log "checking #{fullName}:#{branch} vs #{repository.full_name}"
+
         repository.full_name is fullName and repository.branch is branch
       .first()
+
+      console.log name
 
       if name
         cache[name]
