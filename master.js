@@ -1,12 +1,15 @@
 (function() {
-  var Packager, cacheManifest, dependencyScripts, html, jsonpWrapper, makeScript, packageWrapper, program, reject;
+  var Packager, cacheManifest, dependencyScripts, html, jsonpWrapper, lookupCached, makeScript, packageWrapper, program, reject;
 
   Packager = {
-    collectDependencies: function(dependencies) {
+    collectDependencies: function(dependencies, cachedDependencies) {
       var names;
+      if (cachedDependencies == null) {
+        cachedDependencies = {};
+      }
       names = Object.keys(dependencies);
       return Deferred.when(names.map(function(name) {
-        var branch, callback, match, repo, user, value;
+        var branch, cachedDependency, callback, match, repo, user, value;
         value = dependencies[name];
         if (typeof value === "string") {
           if (value.startsWith("http")) {
@@ -15,12 +18,16 @@
             if ((match = value.match(/([^\/]*)\/([^\:]*)\:(.*)/))) {
               callback = match[0], user = match[1], repo = match[2], branch = match[3];
               user = user.toLowerCase();
-              return $.ajax({
-                url: "http://" + user + ".github.io/" + repo + "/" + branch + ".jsonp",
-                dataType: "jsonp",
-                jsonpCallback: callback,
-                cache: true
-              });
+              if (cachedDependency = lookupCache(cachedDependencies, "" + user + "/" + repo, branch)) {
+                return cachedDependency;
+              } else {
+                return $.ajax({
+                  url: "http://" + user + ".github.io/" + repo + "/" + branch + ".jsonp",
+                  dataType: "jsonp",
+                  jsonpCallback: callback,
+                  cache: true
+                });
+              }
             } else {
               return reject("Failed to parse repository info string " + value + ", be sure it's in the\nform `<user>/<repo>:<ref>` for example: `STRd6/issues:master`\nor `STRd6/editor:v0.9.1`");
             }
@@ -118,6 +125,18 @@
 
   packageWrapper = function(pkg, code) {
     return ";(function(PACKAGE) {\nvar require = Require.generateFor(PACKAGE);\n" + code + "\n})(" + (JSON.stringify(pkg, null, 2)) + ");";
+  };
+
+  lookupCached = function(cache, fullName, branch) {
+    var name;
+    name = Object.keys(cache).select(function(key) {
+      var repository;
+      repository = cache[name].repository;
+      return repository.full_name === fullName && repository.branch === branch;
+    }).first();
+    if (name) {
+      return cache[name];
+    }
   };
 
 }).call(this);
