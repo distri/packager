@@ -224,19 +224,4 @@ Lookup a package from a cached list of packages.
       console.log name
 
       if name
-        # Require annotates packages with a cache, let's omit that
-        # TODO: Ideally this omit wouldn't be necessary
-        omit(cache[name], "cache")
-
-Helpers
--------
-
-Omit
-
-    omit = (object, keysToOmit...) ->
-      copy = {}
-      Object.keys(object).forEach (key) ->
-        if object.hasOwnProperty(key) and !keysToOmit.include(key)
-          copy[key] = object[key]
-
-      return copy
+        cache[name]
