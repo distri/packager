@@ -215,13 +215,9 @@ Lookup a package from a cached list of packages.
     lookupCached = (cache, fullName, branch) ->
       name = Object.keys(cache).select (key) ->
         repository = cache[key].repository
-        
-        console.log "checking #{fullName}:#{branch} vs #{repository.full_name}"
 
         repository.full_name is fullName and repository.branch is branch
       .first()
-
-      console.log name
 
       if name
         cache[name]
