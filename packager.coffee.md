@@ -73,7 +73,10 @@ The `.js`, `.json`, and `.jsonp` build products are placed into the root level,
 as siblings to the folder containing `index.html`. If this branch is the default
 then these build products are placed as siblings to `index.html`
 
-      standAlone: (pkg) ->
+The optional second argument is an array of files to be added to the final
+package.
+
+      standAlone: (pkg, files=[]) ->
         repository = pkg.repository
         branch = repository.branch
 
@@ -82,7 +85,6 @@ then these build products are placed as siblings to `index.html`
         else
           base = "#{branch}/"
 
-        files = []
         add = (path, content) ->
           files.push
             path: path
@@ -93,11 +95,7 @@ then these build products are placed as siblings to `index.html`
 
         json = JSON.stringify(pkg, null, 2)
 
-        add "#{branch}.js", program(pkg)
-        add "#{branch}.json", json
         add "#{branch}.jsonp", jsonpWrapper(repository, json)
-
-        # TODO: Add docs
 
         return files
 
@@ -178,18 +176,6 @@ the remote script dependencies of this build.
 
     dependencyScripts = (remoteDependencies=[]) ->
       remoteDependencies.map(makeScript).join("\n")
-
-A standalone JS program for the package. Does not use `require` and is only
-suitable for script style dependencies.
-
-    program = ({distribution, entryPoint}) ->
-      if main = distribution[entryPoint]
-        return main.content
-      else
-        # TODO: We should emit some kind of user-visible warning
-        console.warn "Entry point #{entryPoint} not found."
-
-        return ""
 
 Wraps the given data in a JSONP function wrapper. This allows us to host our
 packages on Github pages and get around any same origin issues by using JSONP.
