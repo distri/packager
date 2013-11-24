@@ -191,7 +191,10 @@ can be used for generating standalone HTML pages, scripts, and tests.
     packageWrapper = (pkg, code) ->
       """
         ;(function(PACKAGE) {
+        var oldRequire = window.Require;
+        #{PACKAGE.dependencies.require.distribution.main.content}
         var require = Require.generateFor(PACKAGE);
+        window.Require = oldRequire;
         #{code}
         })(#{JSON.stringify(pkg, null, 2)});
       """

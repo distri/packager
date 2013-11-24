@@ -1,7 +1,9 @@
-version: "0.3.3"
+version: "0.4.0"
 entryPoint: "packager"
 remoteDependencies: [
   "//code.jquery.com/jquery-1.10.1.min.js"
   "http://strd6.github.io/tempest/javascripts/envweb.js"
   "http://strd6.github.io/require/v0.2.2.js"
 ]
+dependencies:
+  require: "STRd6/require:v0.2.2"
