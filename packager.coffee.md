@@ -38,7 +38,7 @@ unique for all our packages so we use it to determine the URL and name callback.
                   [cachedDependency]
                 else
                   $.ajax
-                    url: "http://#{user}.github.io/#{repo}/#{branch}.jsonp"
+                    url: "http://#{user}.github.io/#{repo}/#{branch}.json.js"
                     dataType: "jsonp"
                     jsonpCallback: callback
                     cache: true
@@ -95,7 +95,7 @@ package.
 
         json = JSON.stringify(pkg, null, 2)
 
-        add "#{branch}.jsonp", jsonpWrapper(repository, json)
+        add "#{branch}.json.js", jsonpWrapper(repository, json)
 
         return files
 
