@@ -76,7 +76,7 @@ unique for all our packages so we use it to determine the URL and name callback.
               [cachedDependency]
             <span class="keyword">else</span>
               $.ajax
-                url: <span class="string">"http://<span class="subst">#{user}</span>.github.io/<span class="subst">#{repo}</span>/<span class="subst">#{branch}</span>.jsonp"</span>
+                url: <span class="string">"http://<span class="subst">#{user}</span>.github.io/<span class="subst">#{repo}</span>/<span class="subst">#{branch}</span>.json.js"</span>
                 dataType: <span class="string">"jsonp"</span>
                 jsonpCallback: callback
                 cache: <span class="literal">true</span>
@@ -137,7 +137,7 @@ package.</p>
 
     json = JSON.stringify(pkg, <span class="literal">null</span>, <span class="number">2</span>)
 
-    add <span class="string">"<span class="subst">#{branch}</span>.jsonp"</span>, jsonpWrapper(repository, json)
+    add <span class="string">"<span class="subst">#{branch}</span>.json.js"</span>, jsonpWrapper(repository, json)
 
     <span class="keyword">return</span> files</code></pre>
 </div>
