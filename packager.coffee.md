@@ -87,8 +87,10 @@ package.
 
         add = (path, content) ->
           files.push
-            path: path
             content: content
+            mode: "100644"
+            path: path
+            type: "blob"
 
         add "#{base}index.html", html(pkg)
         add "#{base}manifest.appcache", cacheManifest(pkg)
