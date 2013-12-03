@@ -129,8 +129,10 @@ package.</p>
 
     <span class="function"><span class="title">add</span></span> = (path, content) -&gt;
       files.push
-        path: path
         content: content
+        mode: <span class="string">"100644"</span>
+        path: path
+        type: <span class="string">"blob"</span>
 
     add <span class="string">"<span class="subst">#{base}</span>index.html"</span>, html(pkg)
     add <span class="string">"<span class="subst">#{base}</span>manifest.appcache"</span>, cacheManifest(pkg)
@@ -264,10 +266,7 @@ attribute.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">makeScript</span></span> = (src) -&gt;
-  script = document.createElement(<span class="string">"script"</span>)
-  script.src = src
-
-  <span class="keyword">return</span> script.outerHTML</code></pre>
+  <span class="string">"&lt;script src=<span class="subst">#{JSON.stringify(src)}</span>&gt;&lt;\/script&gt;"</span></code></pre>
 </div>
         </li>
         
@@ -352,6 +351,7 @@ can be used for generating standalone HTML pages, scripts, and tests.</p>
   <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
 <script src="http://strd6.github.io/require/v0.2.2.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script src="http://strd6.github.io/tempest/javascripts/envweb.js"></script><script>
   $.ajax({
     url: "http://strd6.github.io/interactive/v0.8.1.jsonp",
