@@ -1,8 +1,8 @@
 Packager
 ========
 
-The main responsibilities will be bundling dependencies, and creating the
-package.
+The main responsibilities of the packager are bundling dependencies, and 
+creating the package.
 
     Packager =
 
@@ -69,9 +69,9 @@ Docs are generated and placed in `docs` directory as a sibling to `index.html`.
 
 An application manifest is served up as a sibling to `index.html` as well.
 
-The `.js`, `.json`, and `.jsonp` build products are placed into the root level,
-as siblings to the folder containing `index.html`. If this branch is the default
-then these build products are placed as siblings to `index.html`
+The `.json.js` build product is placed into the root level, as siblings to the
+folder containing `index.html`. If this branch is the default then these build
+products are placed as siblings to `index.html`
 
 The optional second argument is an array of files to be added to the final
 package.
