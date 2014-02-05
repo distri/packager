@@ -1,7 +1,7 @@
 Packager
 ========
 
-The main responsibilities of the packager are bundling dependencies, and 
+The main responsibilities of the packager are bundling dependencies, and
 creating the package.
 
 Specification
@@ -33,6 +33,8 @@ us to use a simplified Node.js style `require` from the browser.
 
 Implementation
 --------------
+
+    Deferred = require "./deferred"
 
     Packager =
 
