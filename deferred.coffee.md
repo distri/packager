@@ -63,6 +63,7 @@ succeed with an empty array for results.
       .then (results...) ->
         # WTF: jQuery.when behaves differently for one argument than it does for
         # two or more.
+
         if promises.length is 1
           results = [results]
         else
