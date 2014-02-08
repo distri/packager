@@ -139,6 +139,7 @@ succeed with an empty array for results.</p>
   .<span class="keyword">then</span> (results...) -&gt;
     <span class="comment"># WTF: jQuery.when behaves differently for one argument than it does for</span>
     <span class="comment"># two or more.</span>
+
     <span class="keyword">if</span> promises.length <span class="keyword">is</span> <span class="number">1</span>
       results = [results]
     <span class="keyword">else</span>
