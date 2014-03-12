@@ -60,17 +60,25 @@ unique for all our packages so we use it to determine the URL and name callback.
           value = dependencies[name]
 
           if typeof value is "string"
-            if value.startsWith("http")
+            if startsWith(value, "http")
               $.getJSON(value)
             else
               if (match = value.match(/([^\/]*)\/([^\:]*)\:(.*)/))
                 [callback, user, repo, branch] = match
 
                 if cachedDependency = lookupCached(cachedDependencies, "#{user}/#{repo}", branch)
-                  [cachedDependency]
+                  # DOUBLE HACK: Because jQuery deferreds are so bad
+                  # we only need to make this an array if our length isn't exactly one
+                  if names.length is 1
+                    cachedDependency
+                  else
+                    [cachedDependency]
                 else
+                  url = "http://#{user}.github.io/#{repo}/#{branch}.json.js"
+                  console.log "ajaxin", url
+                  
                   $.ajax
-                    url: "http://#{user}.github.io/#{repo}/#{branch}.json.js"
+                    url: url
                     dataType: "jsonp"
                     jsonpCallback: callback
                     cache: true
@@ -86,7 +94,7 @@ unique for all our packages so we use it to determine the URL and name callback.
           bundledDependencies = {}
 
           names.each (name, i) ->
-            bundledDependencies[name] = results[i].first()
+            bundledDependencies[name] = results[i][0]
 
           return bundledDependencies
 
@@ -138,7 +146,7 @@ Generates a standalone page for testing the app.
       testScripts: (pkg) ->
         {distribution} = pkg
 
-        testProgram = Object.keys(distribution).select (path) ->
+        testProgram = Object.keys(distribution).filter (path) ->
           path.match /test\//
         .map (testPath) ->
           "require('./#{testPath}')"
@@ -155,6 +163,9 @@ Generates a standalone page for testing the app.
 
 Helpers
 -------
+
+    startsWith = (string, prefix) ->
+      string.match RegExp "^#{prefix}"
 
 Create a rejected deferred with the given message.
 
@@ -233,11 +244,10 @@ can be used for generating standalone HTML pages, scripts, and tests.
 Lookup a package from a cached list of packages.
 
     lookupCached = (cache, fullName, branch) ->
-      name = Object.keys(cache).select (key) ->
+      names = Object.keys(cache).filter (key) ->
         repository = cache[key].repository
 
         repository.full_name is fullName and repository.branch is branch
-      .first()
 
-      if name
+      if names?[0]
         cache[name]
