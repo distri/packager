@@ -1,7 +1,7 @@
-version: "0.5.3"
+version: "0.5.4"
 entryPoint: "packager"
 remoteDependencies: [
   "https://code.jquery.com/jquery-1.10.1.min.js"
 ]
 dependencies:
-  require: "STRd6/require:v0.3.0"
+  require: "distri/require:v0.4.1"
