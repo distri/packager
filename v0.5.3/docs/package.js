@@ -1,4 +1,7 @@
-window["distri/packager:v0.5.3"]({
+(function(pkg) {
+  // Expose a require for our package so scripts can access our modules
+  window.require = Require.generateFor(pkg);
+})({
   "source": {
     "LICENSE": {
       "path": "LICENSE",
