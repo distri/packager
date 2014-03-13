@@ -1,0 +1,4 @@
+TODO
+====
+
+- Remove jQuery dependency.
