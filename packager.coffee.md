@@ -75,8 +75,7 @@ unique for all our packages so we use it to determine the URL and name callback.
                     [cachedDependency]
                 else
                   url = "http://#{user}.github.io/#{repo}/#{branch}.json.js"
-                  console.log "ajaxin", url
-                  
+
                   $.ajax
                     url: url
                     dataType: "jsonp"
@@ -93,7 +92,7 @@ unique for all our packages so we use it to determine the URL and name callback.
         ).then (results) ->
           bundledDependencies = {}
 
-          names.each (name, i) ->
+          names.forEach (name, i) ->
             bundledDependencies[name] = results[i][0]
 
           return bundledDependencies
