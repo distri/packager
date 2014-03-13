@@ -41,6 +41,12 @@ window["distri/packager:v0.5.3"]({
       "mode": "100644",
       "content": "Packager = require(\"../packager\")\n\n{dependencies} = require(\"../pixie\")\n\ndescribe \"Packager\", ->\n  it \"should exist\", ->\n    assert Packager\n\n  it \"should be able to create a standalone html page\", ->\n    assert Packager.standAlone(PACKAGE)\n\n  it \"should be able to collect remote dependencies\", ->\n    Packager.collectDependencies(dependencies)\n    .then (results) ->\n      console.log \"success\"\n      console.log results\n    , (errors) ->\n      console.log errors\n",
       "type": "blob"
+    },
+    "TODO.md": {
+      "path": "TODO.md",
+      "mode": "100644",
+      "content": "TODO\n====\n\n- Remove jQuery dependency.\n",
+      "type": "blob"
     }
   },
   "distribution": {
