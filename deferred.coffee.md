@@ -68,7 +68,7 @@ succeed with an empty array for results.
           results = [results]
         else
           results
-        
+
         return results
 
     module.exports = Deferred

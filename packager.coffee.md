@@ -37,58 +37,14 @@ Implementation
     Deferred = require "./deferred"
 
     Packager =
-
-If our string is an absolute URL then we assume that the server is CORS enabled
-and we can make a cross origin request to collect the JSON data.
-
-We also handle a Github repo dependency. Something like `STRd6/issues:master`.
-This uses JSONP to load the package from the gh-pages branch of the given repo.
-
-`STRd6/issues:master` will be accessible at `http://strd6.github.io/issues/master.jsonp`.
-The callback is the same as the repo info string: `window["STRd6/issues:master"](... DATA ...)`
-
-Why all the madness? Github pages doesn't allow CORS right now, so we need to use
-the JSONP hack to work around it. Because the files are static we can't allow the
-server to generate a wrapper in response to our query string param so we need to
-work out a unique one per file ahead of time. The `<user>/<repo>:<ref>` string is
-unique for all our packages so we use it to determine the URL and name callback.
-
-      collectDependencies: (dependencies, cachedDependencies={}) ->
+      collectDependencies: (dependencies) ->
         names = Object.keys(dependencies)
 
         Deferred.when(names.map (name) ->
           value = dependencies[name]
 
-          if typeof value is "string"
-            if startsWith(value, "http")
-              $.getJSON(value)
-            else
-              if (match = value.match(/([^\/]*)\/([^\:]*)\:(.*)/))
-                [callback, user, repo, branch] = match
+          fetchDependency value
 
-                if cachedDependency = lookupCached(cachedDependencies, "#{user}/#{repo}", branch)
-                  # DOUBLE HACK: Because jQuery deferreds are so bad
-                  # we only need to make this an array if our length isn't exactly one
-                  if names.length is 1
-                    cachedDependency
-                  else
-                    [cachedDependency]
-                else
-                  url = "http://#{user}.github.io/#{repo}/#{branch}.json.js"
-
-                  $.ajax
-                    url: url
-                    dataType: "jsonp"
-                    jsonpCallback: callback
-                    cache: true
-              else
-                reject """
-                  Failed to parse repository info string #{value}, be sure it's in the
-                  form `<user>/<repo>:<ref>` for example: `STRd6/issues:master`
-                  or `STRd6/editor:v0.9.1`
-                """
-          else
-            reject "Can only handle url string dependencies right now"
         ).then (results) ->
           bundledDependencies = {}
 
@@ -169,7 +125,7 @@ Helpers
 Create a rejected deferred with the given message.
 
     reject = (message) ->
-      Deferred().reject(message)
+      Deferred().reject(message).promise()
 
 A standalone html page for a package.
 
@@ -239,6 +195,45 @@ can be used for generating standalone HTML pages, scripts, and tests.
         #{code}
         })(#{JSON.stringify(pkg, null, 2)});
       """
+
+If our string is an absolute URL then we assume that the server is CORS enabled
+and we can make a cross origin request to collect the JSON data.
+
+We also handle a Github repo dependency such as `STRd6/issues:master`.
+This uses JSONP to load the package from the gh-pages branch of the given repo.
+
+`STRd6/issues:master` will be accessible at `http://strd6.github.io/issues/master.json.js`.
+The callback is the same as the repo info string: `window["STRd6/issues:master"](... DATA ...)`
+
+Why all the madness? Github pages doesn't allow CORS right now, so we need to use
+the JSONP hack to work around it. Because the files are static we can't allow the
+server to generate a wrapper in response to our query string param so we need to
+work out a unique one per file ahead of time. The `<user>/<repo>:<ref>` string is
+unique for all our packages so we use it to determine the URL and name callback.
+
+    fetchDependency = _.memoize (path) ->
+      if typeof path is "string"
+        if startsWith(path, "http")
+          $.getJSON(path)
+        else
+          if (match = path.match(/([^\/]*)\/([^\:]*)\:(.*)/))
+            [callback, user, repo, branch] = match
+
+            url = "http://#{user}.github.io/#{repo}/#{branch}.json.js"
+
+            $.ajax
+              url: url
+              dataType: "jsonp"
+              jsonpCallback: callback
+              cache: true
+          else
+            reject """
+              Failed to parse repository info string #{path}, be sure it's in the
+              form `<user>/<repo>:<ref>` for example: `STRd6/issues:master`
+              or `STRd6/editor:v0.9.1`
+            """
+      else
+        reject "Can only handle url string dependencies right now"
 
 Lookup a package from a cached list of packages.
 
