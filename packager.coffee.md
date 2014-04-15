@@ -234,14 +234,3 @@ unique for all our packages so we use it to determine the URL and name callback.
             """
       else
         reject "Can only handle url string dependencies right now"
-
-Lookup a package from a cached list of packages.
-
-    lookupCached = (cache, fullName, branch) ->
-      names = Object.keys(cache).filter (key) ->
-        repository = cache[key].repository
-
-        repository.full_name is fullName and repository.branch is branch
-
-      if names?[0]
-        cache[name]
