@@ -3,11 +3,10 @@ Packager = require("../packager")
 {dependencies} = require("../pixie")
 
 describe "Packager", ->
-  it "should exist", ->
-    assert Packager
-
   it "should be able to create a standalone html page", ->
-    assert Packager.standAlone(PACKAGE)
+    result = Packager.standAlone(PACKAGE)
+    console.log result
+    assert result
 
   it "should be able to collect remote dependencies", ->
     Packager.collectDependencies(dependencies)
