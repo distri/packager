@@ -125,7 +125,7 @@ package.</p>
     repository = pkg.repository
     branch = repository.branch
 
-    <span class="keyword">if</span> branch <span class="keyword">is</span> repository.default_branch
+    <span class="keyword">if</span> isDefault(pkg)
       base = <span class="string">""</span>
     <span class="keyword">else</span>
       base = <span class="string">"<span class="subst">#{branch}</span>/"</span>
@@ -142,7 +142,7 @@ package.</p>
 
     json = JSON.stringify(pkg, <span class="literal">null</span>, <span class="number">2</span>)
 
-    add <span class="string">"<span class="subst">#{branch}</span>.json.js"</span>, jsonpWrapper(repository, json)
+    add jsonpScriptPath(pkg), jsonpWrapper(pkg, json)
 
     <span class="keyword">return</span> files</code></pre>
 </div>
@@ -197,10 +197,12 @@ module.exports = Packager</code></pre>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              
+              <p>The path to the published jsonp script. This is the primary build product and is
+used when requiring in other packages and running standalone html.</p>
+
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">startsWith</span></span> = (string, prefix) -&gt;
-  string.match RegExp <span class="string">"^<span class="subst">#{prefix}</span>"</span></code></pre>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">jsonpScriptPath</span></span> = ({repository:{branch}}) -&gt;
+  <span class="string">"<span class="subst">#{branch}</span>.json.js"</span></code></pre>
 </div>
         </li>
         
@@ -209,6 +211,70 @@ module.exports = Packager</code></pre>
             <div class="annotation">
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Check if repository is publishing to default branch.</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">isDefault</span></span> = (pkg) -&gt;
+  {repository} = pkg
+  {branch} = repository
+
+  branch <span class="keyword">is</span> repository.default_branch</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Relative package script tag.</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">relativePackageScript</span></span> = (pkg) -&gt;
+  path = <span class="keyword">if</span> isDefault(pkg)
+    jsonpScriptPath(pkg)
+  <span class="keyword">else</span>
+    <span class="string">"../<span class="subst">#{jsonpScriptPath(pkg)}</span>"</span>
+
+  <span class="string">"&lt;script src=<span class="subst">#{JSON.stringify(path)}</span>&gt;&lt;\/script&gt;"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Launcher</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">launcherScript</span></span> = (pkg) -&gt;
+  <span class="string">"""
+    &lt;script&gt;
+      window[<span class="subst">#{jsonpFnName(pkg)}</span>] = function(PACKAGE) {
+        delete window[<span class="subst">#{jsonpFnName(pkg)}</span>];
+        var oldRequire = window.Require;
+        <span class="subst">#{PACKAGE.dependencies.require.distribution.main.content}</span>;
+        var require = Require.generateFor(PACKAGE);
+        window.Require = oldRequire;
+        require('./' + PACKAGE.entryPoint);
+      };
+    &lt;\/script&gt;
+  """</span>
+
+<span class="function"><span class="title">startsWith</span></span> = (string, prefix) -&gt;
+  string.match RegExp <span class="string">"^<span class="subst">#{prefix}</span>"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>Create a rejected deferred with the given message.</p>
 
@@ -219,10 +285,10 @@ module.exports = Packager</code></pre>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-13">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>A standalone html page for a package.</p>
 
@@ -231,25 +297,24 @@ module.exports = Packager</code></pre>
   <span class="string">"""
     &lt;!DOCTYPE html&gt;
     &lt;html manifest="manifest.appcache?<span class="subst">#{+<span class="keyword">new</span> Date}</span>"&gt;
-    &lt;head&gt;
-    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
-    <span class="subst">#{dependencyScripts(pkg.remoteDependencies)}</span>
-    &lt;/head&gt;
-    &lt;body&gt;
-    &lt;script&gt;
-    <span class="subst">#{packageWrapper(pkg, "require('./#{pkg.entryPoint}</span>')")}
-    &lt;\/script&gt;
-    &lt;/body&gt;
+      &lt;head&gt;
+        &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+        <span class="subst">#{dependencyScripts(pkg.remoteDependencies)}</span>
+      &lt;/head&gt;
+      &lt;body&gt;
+        <span class="subst">#{launcherScript(pkg)}</span>
+        <span class="subst">#{relativePackageScript(pkg)}</span>
+      &lt;/body&gt;
     &lt;/html&gt;
   """</span></code></pre>
 </div>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-14">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>An HTML5 cache manifest for a package.</p>
 
@@ -272,10 +337,10 @@ module.exports = Packager</code></pre>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-15">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p><code>makeScript</code> returns a string representation of a script tag that has a src
 attribute.</p>
@@ -287,10 +352,10 @@ attribute.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-16">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p><code>dependencyScripts</code> returns a string containing the script tags that are
 the remote script dependencies of this build.</p>
@@ -302,27 +367,41 @@ the remote script dependencies of this build.</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-17">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>JSONp Function name</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">jsonpFnName</span></span> = ({repository}) -&gt;
+  <span class="string">"<span class="subst">#{repository.full_name}</span>:<span class="subst">#{repository.branch}</span>"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <p>Wraps the given data in a JSONP function wrapper. This allows us to host our
 packages on Github pages and get around any same origin issues by using JSONP.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">jsonpWrapper</span></span> = (repository, data) -&gt;
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">jsonpWrapper</span></span> = (pkg, data) -&gt;
   <span class="string">"""
-    window["<span class="subst">#{repository.full_name}</span>:<span class="subst">#{repository.branch}</span>"](<span class="subst">#{data}</span>);
+    window[<span class="subst">#{jsonpFnName(pkg)}</span>](<span class="subst">#{data}</span>);
   """</span></code></pre>
 </div>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-19">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Wrap code in a closure that provides the package and a require function. This
 can be used for generating standalone HTML pages, scripts, and tests.</p>
@@ -342,10 +421,10 @@ can be used for generating standalone HTML pages, scripts, and tests.</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-20">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.</p>
