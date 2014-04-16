@@ -75,7 +75,7 @@ package.
         repository = pkg.repository
         branch = repository.branch
 
-        if branch is repository.default_branch
+        if isDefault(pkg)
           base = ""
         else
           base = "#{branch}/"
@@ -92,7 +92,7 @@ package.
 
         json = JSON.stringify(pkg, null, 2)
 
-        add "#{branch}.json.js", jsonpWrapper(repository, json)
+        add jsonpScriptPath(pkg), jsonpWrapper(pkg, json)
 
         return files
 
@@ -119,6 +119,46 @@ Generates a standalone page for testing the app.
 Helpers
 -------
 
+The path to the published jsonp script. This is the primary build product and is
+used when requiring in other packages and running standalone html.
+
+    jsonpScriptPath = ({repository:{branch}}) ->
+      "#{branch}.json.js"
+
+Check if repository is publishing to default branch.
+
+    isDefault = (pkg) ->
+      {repository} = pkg
+      {branch} = repository
+
+      branch is repository.default_branch
+
+Relative package script tag.
+
+    relativePackageScript = (pkg) ->
+      path = if isDefault(pkg)
+        jsonpScriptPath(pkg)
+      else
+        "../#{jsonpScriptPath(pkg)}"
+
+      "<script src=#{JSON.stringify(path)}><\/script>"
+
+Launcher
+
+    launcherScript = (pkg) ->
+      """
+        <script>
+          window[#{jsonpFnName(pkg)}] = function(PACKAGE) {
+            delete window[#{jsonpFnName(pkg)}];
+            var oldRequire = window.Require;
+            #{PACKAGE.dependencies.require.distribution.main.content};
+            var require = Require.generateFor(PACKAGE);
+            window.Require = oldRequire;
+            require('./' + PACKAGE.entryPoint);
+          };
+        <\/script>
+      """
+
     startsWith = (string, prefix) ->
       string.match RegExp "^#{prefix}"
 
@@ -133,15 +173,14 @@ A standalone html page for a package.
       """
         <!DOCTYPE html>
         <html manifest="manifest.appcache?#{+new Date}">
-        <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        #{dependencyScripts(pkg.remoteDependencies)}
-        </head>
-        <body>
-        <script>
-        #{packageWrapper(pkg, "require('./#{pkg.entryPoint}')")}
-        <\/script>
-        </body>
+          <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            #{dependencyScripts(pkg.remoteDependencies)}
+          </head>
+          <body>
+            #{launcherScript(pkg)}
+            #{relativePackageScript(pkg)}
+          </body>
         </html>
       """
 
@@ -174,12 +213,17 @@ the remote script dependencies of this build.
     dependencyScripts = (remoteDependencies=[]) ->
       remoteDependencies.map(makeScript).join("\n")
 
+JSONp Function name
+
+    jsonpFnName = ({repository}) ->
+      "#{repository.full_name}:#{repository.branch}"
+
 Wraps the given data in a JSONP function wrapper. This allows us to host our
 packages on Github pages and get around any same origin issues by using JSONP.
 
-    jsonpWrapper = (repository, data) ->
+    jsonpWrapper = (pkg, data) ->
       """
-        window["#{repository.full_name}:#{repository.branch}"](#{data});
+        window[#{jsonpFnName(pkg)}](#{data});
       """
 
 Wrap code in a closure that provides the package and a require function. This
