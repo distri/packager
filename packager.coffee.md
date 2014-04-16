@@ -148,8 +148,8 @@ Launcher
     launcherScript = (pkg) ->
       """
         <script>
-          window[#{jsonpFnName(pkg)}] = function(PACKAGE) {
-            delete window[#{jsonpFnName(pkg)}];
+          window["#{jsonpFnName(pkg)}"] = function(PACKAGE) {
+            delete window["#{jsonpFnName(pkg)}"];
             var oldRequire = window.Require;
             #{PACKAGE.dependencies.require.distribution.main.content};
             var require = Require.generateFor(PACKAGE);
@@ -223,7 +223,7 @@ packages on Github pages and get around any same origin issues by using JSONP.
 
     jsonpWrapper = (pkg, data) ->
       """
-        window[#{jsonpFnName(pkg)}](#{data});
+        window["#{jsonpFnName(pkg)}"](#{data});
       """
 
 Wrap code in a closure that provides the package and a require function. This
