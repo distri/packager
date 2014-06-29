@@ -233,7 +233,7 @@ used when requiring in other packages and running standalone html.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">relativePackageScript</span></span> = (pkg) -&gt;
-  path = relativePackageScriptPath
+  path = relativePackageScriptPath(pkg)
 
   <span class="string">"&lt;script src=<span class="subst">#{JSON.stringify(path)}</span>&gt;&lt;\/script&gt;"</span>
 
