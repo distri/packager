@@ -136,7 +136,7 @@ Check if repository is publishing to default branch.
 Relative package script tag.
 
     relativePackageScript = (pkg) ->
-      path = relativePackageScriptPath
+      path = relativePackageScriptPath(pkg)
 
       "<script src=#{JSON.stringify(path)}><\/script>"
 
