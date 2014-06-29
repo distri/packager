@@ -136,12 +136,15 @@ Check if repository is publishing to default branch.
 Relative package script tag.
 
     relativePackageScript = (pkg) ->
-      path = if isDefault(pkg)
+      path = relativePackageScriptPath
+
+      "<script src=#{JSON.stringify(path)}><\/script>"
+
+    relativePackageScriptPath = (pkg) ->
+      if isDefault(pkg)
         jsonpScriptPath(pkg)
       else
         "../#{jsonpScriptPath(pkg)}"
-
-      "<script src=#{JSON.stringify(path)}><\/script>"
 
 Launcher
 
@@ -187,12 +190,14 @@ A standalone html page for a package.
 An HTML5 cache manifest for a package.
 
     cacheManifest = (pkg) ->
+      # TODO: Add js file
       """
         CACHE MANIFEST
         # #{+ new Date}
 
         CACHE:
         index.html
+        #{relativePackageScriptPath(pkg)}
         #{(pkg.remoteDependencies or []).join("\n")}
 
         NETWORK:
