@@ -32,7 +32,7 @@ window["distri/packager:master"]({
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.5.8-pre.1\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n  \"https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js\"\n]\ndependencies:\n  require: \"distri/require:v0.4.2\"\n",
+      "content": "version: \"0.5.8\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n  \"https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js\"\n]\ndependencies:\n  require: \"distri/require:v0.4.2\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -62,7 +62,7 @@ window["distri/packager:master"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.5.8-pre.1\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\",\"https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js\"],\"dependencies\":{\"require\":\"distri/require:v0.4.2\"}};",
+      "content": "module.exports = {\"version\":\"0.5.8\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\",\"https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js\"],\"dependencies\":{\"require\":\"distri/require:v0.4.2\"}};",
       "type": "blob"
     },
     "test/deferred": {
@@ -79,7 +79,7 @@ window["distri/packager:master"]({
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.5.8-pre.1",
+  "version": "0.5.8",
   "entryPoint": "packager",
   "remoteDependencies": [
     "https://code.jquery.com/jquery-1.11.0.min.js",
