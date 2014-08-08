@@ -18,7 +18,7 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="packager">packager</h1>
+              <h1 id="packager">Packager</h1>
 
             </div>
             <div class="content"><pre><code>
@@ -32,7 +32,38 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Create standalone build products for web packages</p>
+              <p>The main responsibilities of the packager are bundling dependencies, and
+creating the package.</p>
+<h2 id="specification">Specification</h2>
+
+            </div>
+            <div class="content"><pre><code>
+</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>A package is a json object with the following properties:</p>
+<p><code>dependencies</code> an object whose keys are names of dependencies within our context
+and whose values are packages.</p>
+<p><code>distribution</code> an object whose keys are extensionless file paths and whose
+values are executable code compiled from the source files that exist at those paths.</p>
+<p><code>source</code> an object whose keys are file paths and whose values are source code.
+The <code>source</code> can be loaded and modified in an editor to recreate the compiled
+package.</p>
+<p>If the environment or dependecies contain all the tools required to build the
+package then theoretically <code>distribution</code> may be omitted as it can be recreated
+from <code>source</code>.</p>
+<p>For a &quot;production&quot; distribution <code>source</code> may be omitted, but that will greatly
+limit adaptability of packages.</p>
+<p>The package specification is closely tied to the <code>require</code> method. This allows
+us to use a simplified Node.js style <code>require</code> from the browser.</p>
+<p><a href="http://distri.github.io/require/docs">Require Docs</a></p>
 
             </div>
             <div class="content"><pre><code>
