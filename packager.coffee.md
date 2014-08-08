@@ -29,8 +29,6 @@ limit adaptability of packages.
 The package specification is closely tied to the `require` method. This allows
 us to use a simplified Node.js style `require` from the browser.
 
-[Require Docs](/require/docs)
-
 Implementation
 --------------
 
