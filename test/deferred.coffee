@@ -8,7 +8,6 @@ describe "Deferred", ->
       Deferred.when([
         deferred.promise()
       ]).then (results) ->
-        console.log results
         assert.equal results.length, 1, "Results length should be 1"
 
         assert.equal results[0][0], "result", "First result should be 'result'"
@@ -48,7 +47,6 @@ describe "Deferred", ->
       Deferred.when([
         deferred.promise()
       ]).then (results) ->
-        console.log results
         assert.equal results.length, 1, "Results length should be 1"
 
         assert.equal results[0], "result", "result should be 'result'"
