@@ -9,7 +9,7 @@ describe "Packager", ->
     it "should be able to create a standalone html page", ->
       console.log pkg
       assert pkg
-    
+
     it "should have the correct manifest links", ->
       manifest = pkg[1].content
 

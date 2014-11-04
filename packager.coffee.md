@@ -34,6 +34,8 @@ Implementation
 
     Deferred = require "./deferred"
 
+    MemoizePromise = require "memoize_promise"
+
     Packager =
       collectDependencies: (dependencies) ->
         names = Object.keys(dependencies)
@@ -258,7 +260,7 @@ server to generate a wrapper in response to our query string param so we need to
 work out a unique one per file ahead of time. The `<user>/<repo>:<ref>` string is
 unique for all our packages so we use it to determine the URL and name callback.
 
-    fetchDependency = _.memoize (path) ->
+    fetchDependency = MemoizePromise (path) ->
       if typeof path is "string"
         if startsWith(path, "http")
           $.getJSON(path)
