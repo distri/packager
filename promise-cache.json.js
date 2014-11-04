@@ -32,7 +32,7 @@ window["distri/packager:promise-cache"]({
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.5.9-pre.0\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n]\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  memoize_promise: \"distri/memoize_promise:v0.1.0\"\n",
+      "content": "version: \"0.5.9\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n]\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  memoize_promise: \"distri/memoize_promise:v0.1.0\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -62,7 +62,7 @@ window["distri/packager:promise-cache"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.5.9-pre.0\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\"],\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"memoize_promise\":\"distri/memoize_promise:v0.1.0\"}};",
+      "content": "module.exports = {\"version\":\"0.5.9\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\"],\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"memoize_promise\":\"distri/memoize_promise:v0.1.0\"}};",
       "type": "blob"
     },
     "test/deferred": {
@@ -79,7 +79,7 @@ window["distri/packager:promise-cache"]({
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.5.9-pre.0",
+  "version": "0.5.9",
   "entryPoint": "packager",
   "remoteDependencies": [
     "https://code.jquery.com/jquery-1.11.0.min.js"
