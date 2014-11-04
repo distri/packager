@@ -1,11 +1,10 @@
 CACHE MANIFEST
-# 1415065302673
+# 1415070441129
 
 CACHE:
 index.html
 ../promise-cache.json.js
 https://code.jquery.com/jquery-1.11.0.min.js
-https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js
 
 NETWORK:
 https://*
