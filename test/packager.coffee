@@ -9,12 +9,14 @@ describe "Packager", ->
     it "should be able to create a standalone html page", ->
       console.log pkg
       assert pkg
-    
+
     it "should have the correct manifest links", ->
       manifest = pkg[1].content
 
-      assert manifest.match /^master.json.js$/m
-      assert manifest.match /^index.html$/m
+      console.log manifest
+
+      assert manifest.match(/^master.json.js$/m)
+      assert manifest.match(/^index.html$/m)
 
     it "should have the correct script links", ->
       html = pkg[0].content
