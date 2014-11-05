@@ -29,92 +29,12 @@ limit adaptability of packages.
 The package specification is closely tied to the `require` method. This allows
 us to use a simplified Node.js style `require` from the browser.
 
-Implementation
---------------
+Dependencies
+------------
 
     Q = require "q"
 
     MemoizePromise = require "memoize_promise"
-
-    Packager =
-      collectDependencies: (dependencies) ->
-        names = Object.keys(dependencies)
-
-        Q.all(names.map (name) ->
-          value = dependencies[name]
-
-          fetchDependency value
-
-        ).then (results) ->
-          bundledDependencies = {}
-
-          names.forEach (name, i) ->
-            bundledDependencies[name] = results[i][0]
-
-          return bundledDependencies
-
-Create the standalone components of this package. An html page that loads the
-main entry point for demonstration purposes and a json package that can be
-used as a dependency in other packages.
-
-The html page is named `index.html` and is in the folder of the ref, or the root
-if our ref is the default branch.
-
-Docs are generated and placed in `docs` directory as a sibling to `index.html`.
-
-An application manifest is served up as a sibling to `index.html` as well.
-
-The `.json.js` build product is placed into the root level, as siblings to the
-folder containing `index.html`. If this branch is the default then these build
-products are placed as siblings to `index.html`
-
-The optional second argument is an array of files to be added to the final
-package.
-
-      standAlone: (pkg, files=[]) ->
-        repository = pkg.repository
-        branch = repository.branch
-
-        if isDefault(pkg)
-          base = ""
-        else
-          base = "#{branch}/"
-
-        add = (path, content) ->
-          files.push
-            content: content
-            mode: "100644"
-            path: path
-            type: "blob"
-
-        add "#{base}index.html", html(pkg)
-        add "#{base}manifest.appcache", cacheManifest(pkg)
-
-        json = JSON.stringify(pkg, null, 2)
-
-        add jsonpScriptPath(pkg), jsonpWrapper(pkg, json)
-
-        return files
-
-Generates a standalone page for testing the app.
-
-      testScripts: (pkg) ->
-        {distribution} = pkg
-
-        testProgram = Object.keys(distribution).filter (path) ->
-          path.match /test\//
-        .map (testPath) ->
-          "require('./#{testPath}')"
-        .join "\n"
-
-        """
-          #{dependencyScripts(pkg.remoteDependencies)}
-          <script>
-            #{packageWrapper(pkg, testProgram)}
-          <\/script>
-        """
-
-    module.exports = Packager
 
 Helpers
 -------
@@ -275,6 +195,7 @@ unique for all our packages so we use it to determine the URL and name callback.
               dataType: "jsonp"
               jsonpCallback: callback
               cache: true
+              timeout: 1900
           else
             reject """
               Failed to parse repository info string #{path}, be sure it's in the
@@ -283,3 +204,88 @@ unique for all our packages so we use it to determine the URL and name callback.
             """
       else
         reject "Can only handle url string dependencies right now"
+
+Implementation
+--------------
+
+    Packager =
+      collectDependencies: (dependencies) ->
+        names = Object.keys(dependencies)
+
+        Q.all(names.map (name) ->
+          value = dependencies[name]
+
+          fetchDependency value
+
+        ).then (results) ->
+          bundledDependencies = {}
+
+          names.forEach (name, i) ->
+            bundledDependencies[name] = results[i][0]
+
+          return bundledDependencies
+
+Create the standalone components of this package. An html page that loads the
+main entry point for demonstration purposes and a json package that can be
+used as a dependency in other packages.
+
+The html page is named `index.html` and is in the folder of the ref, or the root
+if our ref is the default branch.
+
+Docs are generated and placed in `docs` directory as a sibling to `index.html`.
+
+An application manifest is served up as a sibling to `index.html` as well.
+
+The `.json.js` build product is placed into the root level, as siblings to the
+folder containing `index.html`. If this branch is the default then these build
+products are placed as siblings to `index.html`
+
+The optional second argument is an array of files to be added to the final
+package.
+
+      standAlone: (pkg, files=[]) ->
+        repository = pkg.repository
+        branch = repository.branch
+
+        if isDefault(pkg)
+          base = ""
+        else
+          base = "#{branch}/"
+
+        add = (path, content) ->
+          files.push
+            content: content
+            mode: "100644"
+            path: path
+            type: "blob"
+
+        add "#{base}index.html", html(pkg)
+        add "#{base}manifest.appcache", cacheManifest(pkg)
+
+        json = JSON.stringify(pkg, null, 2)
+
+        add jsonpScriptPath(pkg), jsonpWrapper(pkg, json)
+
+        return files
+
+Generates a standalone page for testing the app.
+
+      testScripts: (pkg) ->
+        {distribution} = pkg
+
+        testProgram = Object.keys(distribution).filter (path) ->
+          path.match /test\//
+        .map (testPath) ->
+          "require('./#{testPath}')"
+        .join "\n"
+
+        """
+          #{dependencyScripts(pkg.remoteDependencies)}
+          <script>
+            #{packageWrapper(pkg, testProgram)}
+          <\/script>
+        """
+
+      relativePackageScriptPath: relativePackageScriptPath
+
+    module.exports = Packager
