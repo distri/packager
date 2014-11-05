@@ -6,3 +6,4 @@ remoteDependencies: [
 dependencies:
   require: "distri/require:v0.4.2"
   memoize_promise: "distri/memoize_promise:v0.1.0"
+  q: "distri/q:v1.0.1"

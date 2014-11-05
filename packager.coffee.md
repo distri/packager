@@ -32,7 +32,7 @@ us to use a simplified Node.js style `require` from the browser.
 Implementation
 --------------
 
-    Deferred = require "./deferred"
+    Q = require "q"
 
     MemoizePromise = require "memoize_promise"
 
@@ -40,7 +40,7 @@ Implementation
       collectDependencies: (dependencies) ->
         names = Object.keys(dependencies)
 
-        Deferred.when(names.map (name) ->
+        Q.all(names.map (name) ->
           value = dependencies[name]
 
           fetchDependency value
@@ -165,10 +165,10 @@ Launcher
     startsWith = (string, prefix) ->
       string.match RegExp "^#{prefix}"
 
-Create a rejected deferred with the given message.
+Create a rejected promise with the given message.
 
     reject = (message) ->
-      Deferred().reject(message).promise()
+      Q.fcall -> throw message
 
 A standalone html page for a package.
 
@@ -263,14 +263,14 @@ unique for all our packages so we use it to determine the URL and name callback.
     fetchDependency = MemoizePromise (path) ->
       if typeof path is "string"
         if startsWith(path, "http")
-          $.getJSON(path)
+          Q($.getJSON(path))
         else
           if (match = path.match(/([^\/]*)\/([^\:]*)\:(.*)/))
             [callback, user, repo, branch] = match
 
             url = "http://#{user}.github.io/#{repo}/#{branch}.json.js"
 
-            $.ajax
+            Q $.ajax
               url: url
               dataType: "jsonp"
               jsonpCallback: callback
