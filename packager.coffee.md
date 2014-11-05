@@ -221,7 +221,7 @@ Implementation
           bundledDependencies = {}
 
           names.forEach (name, i) ->
-            bundledDependencies[name] = results[i][0]
+            bundledDependencies[name] = results[i]
 
           return bundledDependencies
 

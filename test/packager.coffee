@@ -7,6 +7,8 @@ describe "Packager", ->
     pkg = Packager.standAlone(PACKAGE)
     relativeScriptPath = Packager.relativePackageScriptPath(PACKAGE)
 
+    console.log pkg
+
     it "should have the correct manifest links", ->
       manifest = pkg[1].content
 
@@ -29,6 +31,7 @@ describe "Packager", ->
   it "should be able to collect remote dependencies", (done) ->
     Packager.collectDependencies(dependencies)
     .then (results) ->
+      assert.equal results.require.entryPoint, "main"
       done()
     , (errors) ->
       throw errors
