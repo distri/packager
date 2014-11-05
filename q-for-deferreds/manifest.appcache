@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# 1415158364656
+
+CACHE:
+index.html
+../q-for-deferreds.json.js
+https://code.jquery.com/jquery-1.11.0.min.js
+
+NETWORK:
+https://*
+http://*
+*
