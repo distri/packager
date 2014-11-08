@@ -192,7 +192,7 @@
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.5.13\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n]\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  memoize_promise: \"distri/memoize_promise:v0.1.0\"\n  q: \"distri/q:v1.0.1\"\n",
+      "content": "version: \"0.5.14\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n]\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  memoize_promise: \"distri/memoize_promise:v0.1.0\"\n  q: \"distri/q:v1.0.1\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -211,7 +211,7 @@
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.5.13\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\"],\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"memoize_promise\":\"distri/memoize_promise:v0.1.0\",\"q\":\"distri/q:v1.0.1\"}};",
+      "content": "module.exports = {\"version\":\"0.5.14\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\"],\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"memoize_promise\":\"distri/memoize_promise:v0.1.0\",\"q\":\"distri/q:v1.0.1\"}};",
       "type": "blob"
     },
     "test/packager": {
@@ -223,7 +223,7 @@
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.5.13",
+  "version": "0.5.14",
   "entryPoint": "packager",
   "remoteDependencies": [
     "https://code.jquery.com/jquery-1.11.0.min.js"
