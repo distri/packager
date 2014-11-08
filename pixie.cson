@@ -1,4 +1,4 @@
-version: "0.5.13"
+version: "0.5.14"
 entryPoint: "packager"
 remoteDependencies: [
   "https://code.jquery.com/jquery-1.11.0.min.js"
