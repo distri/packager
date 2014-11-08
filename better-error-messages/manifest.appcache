@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# 1415466101549
+
+CACHE:
+index.html
+../better-error-messages.json.js
+https://code.jquery.com/jquery-1.11.0.min.js
+
+NETWORK:
+https://*
+http://*
+*
