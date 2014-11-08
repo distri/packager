@@ -184,18 +184,30 @@ unique for all our packages so we use it to determine the URL and name callback.
       if typeof path is "string"
         if startsWith(path, "http")
           Q($.getJSON(path))
+          .fail ({status, responseText}) ->
+            switch status
+              when 0
+                message = "Aborted"
+              when 404
+                message = "Not Found"
+              else
+                throw responseText
+
+            throw "#{status} #{message}: #{path}"
         else
           if (match = path.match(/([^\/]*)\/([^\:]*)\:(.*)/))
             [callback, user, repo, branch] = match
 
             url = "http://#{user}.github.io/#{repo}/#{branch}.json.js"
 
-            Q $.ajax
+            Q($.ajax
               url: url
               dataType: "jsonp"
               jsonpCallback: callback
               cache: true
               timeout: 1900
+            ).fail ->
+              throw "Failed to load package '#{path}' from #{url}"
           else
             reject """
               Failed to parse repository info string #{path}, be sure it's in the

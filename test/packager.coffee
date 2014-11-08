@@ -23,8 +23,8 @@ describe "Packager", ->
   it "should fail to build if a resource doesn't exist", (done) ->
     Packager.collectDependencies(
       notFound: "distri/does_not_exist:v0.0.0"
-    ).fail ({statusText}) ->
-      assert.equal statusText, "timeout"
+    ).fail (message) ->
+      assert.equal message, "Failed to load package 'distri/does_not_exist:v0.0.0' from http://distri.github.io/does_not_exist/v0.0.0.json.js"
       done()
     .done()
 
@@ -35,3 +35,29 @@ describe "Packager", ->
       done()
     , (errors) ->
       throw errors
+
+describe "http dependencies", ->
+  it "should be able to have http dependencies", (done) ->
+    Packager.collectDependencies
+      httpRemote: "https://s3.amazonaws.com/trinket/18894/data/00090d8da958fb538def3533dcf1ff3a85bc2054"
+    .then (dependencies) ->
+      assert dependencies.httpRemote
+      console.log dependencies
+      done()
+    .done()
+  
+  it "should display an error message when file is not found", (done) ->
+    Packager.collectDependencies
+      httpRemote: "https://s3.amazonaws.com/trinket/18894/data/notfoundnotarealsha"
+    .fail (message) ->
+      assert.equal message, "404 Not Found: https://s3.amazonaws.com/trinket/18894/data/notfoundnotarealsha"
+      done()
+    .done()
+
+  it "should display an error message when domain is not legit", (done) ->
+    Packager.collectDependencies
+      httpRemote: "http://notfound.yolo.biz.info/duder.json"
+    .fail (message) ->
+      assert.equal message, "0 Aborted: http://notfound.yolo.biz.info/duder.json"
+      done()
+    .done()
