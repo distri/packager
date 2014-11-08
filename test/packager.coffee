@@ -5,27 +5,33 @@ Packager = require("../packager")
 describe "Packager", ->
   describe "building a package", ->
     pkg = Packager.standAlone(PACKAGE)
+    relativeScriptPath = Packager.relativePackageScriptPath(PACKAGE)
 
-    it "should be able to create a standalone html page", ->
-      console.log pkg
-      assert pkg
+    console.log pkg
 
     it "should have the correct manifest links", ->
       manifest = pkg[1].content
 
-      console.log manifest
-
-      assert manifest.match(/^master.json.js$/m)
+      assert manifest.match(///^#{relativeScriptPath}$///m)
       assert manifest.match(/^index.html$/m)
 
     it "should have the correct script links", ->
       html = pkg[0].content
 
-      assert html.match /src="master.json.js"/
+      assert html.match ///src="#{relativeScriptPath}"///
+
+  it "should fail to build if a resource doesn't exist", (done) ->
+    Packager.collectDependencies(
+      notFound: "distri/does_not_exist:v0.0.0"
+    ).fail ({statusText}) ->
+      assert.equal statusText, "timeout"
+      done()
+    .done()
 
   it "should be able to collect remote dependencies", (done) ->
     Packager.collectDependencies(dependencies)
     .then (results) ->
+      assert.equal results.require.entryPoint, "main"
       done()
     , (errors) ->
       throw errors
