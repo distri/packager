@@ -151,20 +151,6 @@ packages on Github pages and get around any same origin issues by using JSONP.
         window["#{jsonpFnName(pkg)}"](#{data});
       """
 
-Wrap code in a closure that provides the package and a require function. This
-can be used for generating standalone HTML pages, scripts, and tests.
-
-    packageWrapper = (pkg, code) ->
-      """
-        ;(function(PACKAGE) {
-        var oldRequire = window.Require;
-        #{PACKAGE.dependencies.require.distribution.main.content}
-        var require = Require.generateFor(PACKAGE);
-        window.Require = oldRequire;
-        #{code}
-        })(#{JSON.stringify(pkg, null, 2)});
-      """
-
 If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.
 
@@ -294,7 +280,7 @@ Generates a standalone page for testing the app.
         """
           #{dependencyScripts(pkg.remoteDependencies)}
           <script>
-            #{packageWrapper(pkg, testProgram)}
+            #{require('require').packageWrapper(pkg, testProgram)}
           <\/script>
         """
 

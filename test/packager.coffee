@@ -45,7 +45,7 @@ describe "http dependencies", ->
       console.log dependencies
       done()
     .done()
-  
+
   it "should display an error message when file is not found", (done) ->
     Packager.collectDependencies
       httpRemote: "https://s3.amazonaws.com/trinket/18894/data/notfoundnotarealsha"
