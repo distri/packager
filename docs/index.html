@@ -316,29 +316,6 @@ packages on Github pages and get around any same origin issues by using JSONP.</
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
-              <p>Wrap code in a closure that provides the package and a require function. This
-can be used for generating standalone HTML pages, scripts, and tests.</p>
-
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">packageWrapper</span></span> = (pkg, code) -&gt;
-  <span class="string">"""
-    ;(function(PACKAGE) {
-    var oldRequire = window.Require;
-    <span class="subst">#{PACKAGE.dependencies.require.distribution.main.content}</span>
-    var require = Require.generateFor(PACKAGE);
-    window.Require = oldRequire;
-    <span class="subst">#{code}</span>
-    })(<span class="subst">#{JSON.stringify(pkg, <span class="literal">null</span>, <span class="number">2</span>)}</span>);
-  """</span></code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-18">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-18">&#182;</a>
-              </div>
               <p>If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.</p>
 <p>We also handle a Github repo dependency such as <code>STRd6/issues:master</code>.
@@ -392,10 +369,10 @@ unique for all our packages so we use it to determine the URL and name callback.
         </li>
         
         
-        <li id="section-19">
+        <li id="section-18">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <h2 id="implementation">Implementation</h2>
 
@@ -406,10 +383,10 @@ unique for all our packages so we use it to determine the URL and name callback.
         </li>
         
         
-        <li id="section-20">
+        <li id="section-19">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               
             </div>
@@ -433,10 +410,10 @@ unique for all our packages so we use it to determine the URL and name callback.
         </li>
         
         
-        <li id="section-21">
+        <li id="section-20">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>Create the standalone components of this package. An html page that loads the
 main entry point for demonstration purposes and a json package that can be
@@ -480,10 +457,10 @@ package.</p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-21">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <p>Generates a standalone page for testing the app.</p>
 
@@ -500,7 +477,7 @@ package.</p>
     <span class="string">"""
       <span class="subst">#{dependencyScripts(pkg.remoteDependencies)}</span>
       &lt;script&gt;
-        <span class="subst">#{packageWrapper(pkg, testProgram)}</span>
+        <span class="subst">#{require('require').packageWrapper(pkg, testProgram)}</span>
       &lt;\/script&gt;
     """</span>
 
