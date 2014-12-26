@@ -26,7 +26,7 @@ window["distri/packager:master"]({
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.5.15-pre.0\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n]\ndependencies:\n  require: \"distri/require:v0.5.0-pre.1\"\n  memoize_promise: \"distri/memoize_promise:v0.1.0\"\n  q: \"distri/q:v1.0.1\"\n",
+      "content": "version: \"0.5.15\"\nentryPoint: \"packager\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n]\ndependencies:\n  require: \"distri/require:v0.5.0\"\n  memoize_promise: \"distri/memoize_promise:v0.1.0\"\n  q: \"distri/q:v1.0.1\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -45,7 +45,7 @@ window["distri/packager:master"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.5.15-pre.0\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\"],\"dependencies\":{\"require\":\"distri/require:v0.5.0-pre.1\",\"memoize_promise\":\"distri/memoize_promise:v0.1.0\",\"q\":\"distri/q:v1.0.1\"}};",
+      "content": "module.exports = {\"version\":\"0.5.15\",\"entryPoint\":\"packager\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\"],\"dependencies\":{\"require\":\"distri/require:v0.5.0\",\"memoize_promise\":\"distri/memoize_promise:v0.1.0\",\"q\":\"distri/q:v1.0.1\"}};",
       "type": "blob"
     },
     "test/packager": {
@@ -57,7 +57,7 @@ window["distri/packager:master"]({
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.5.15-pre.0",
+  "version": "0.5.15",
   "entryPoint": "packager",
   "remoteDependencies": [
     "https://code.jquery.com/jquery-1.11.0.min.js"
@@ -95,7 +95,7 @@ window["distri/packager:master"]({
         },
         "pixie.cson": {
           "path": "pixie.cson",
-          "content": "version: \"0.5.0-pre.1\"\n",
+          "content": "version: \"0.5.0\"\n",
           "mode": "100644",
           "type": "blob"
         },
@@ -138,7 +138,7 @@ window["distri/packager:master"]({
         },
         "pixie": {
           "path": "pixie",
-          "content": "module.exports = {\"version\":\"0.5.0-pre.1\"};",
+          "content": "module.exports = {\"version\":\"0.5.0\"};",
           "type": "blob"
         },
         "samples/circular": {
@@ -170,10 +170,10 @@ window["distri/packager:master"]({
       "progenitor": {
         "url": "http://www.danielx.net/editor/"
       },
-      "version": "0.5.0-pre.1",
+      "version": "0.5.0",
       "entryPoint": "main",
       "repository": {
-        "branch": "v0.5.0-pre.1",
+        "branch": "v0.5.0",
         "default_branch": "master",
         "full_name": "distri/require",
         "homepage": null,
