@@ -184,7 +184,7 @@ unique for all our packages so we use it to determine the URL and name callback.
           if (match = path.match(/([^\/]*)\/([^\:]*)\:(.*)/))
             [callback, user, repo, branch] = match
 
-            url = "http://#{user}.github.io/#{repo}/#{branch}.json.js"
+            url = "https://#{user}.github.io/#{repo}/#{branch}.json.js"
 
             Q($.ajax
               url: url
