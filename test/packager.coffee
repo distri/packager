@@ -24,7 +24,7 @@ describe "Packager", ->
     Packager.collectDependencies(
       notFound: "distri/does_not_exist:v0.0.0"
     ).fail (message) ->
-      assert.equal message, "Failed to load package 'distri/does_not_exist:v0.0.0' from http://distri.github.io/does_not_exist/v0.0.0.json.js"
+      assert.equal message, "Failed to load package 'distri/does_not_exist:v0.0.0' from https://distri.github.io/does_not_exist/v0.0.0.json.js"
       done()
     .done()
 
@@ -56,8 +56,8 @@ describe "http dependencies", ->
 
   it "should display an error message when domain is not legit", (done) ->
     Packager.collectDependencies
-      httpRemote: "http://notfound.yolo.biz.info/duder.json"
+      httpRemote: "https://notfound.yolo.biz.info/duder.json"
     .fail (message) ->
-      assert.equal message, "0 Aborted: http://notfound.yolo.biz.info/duder.json"
+      assert.equal message, "0 Aborted: https://notfound.yolo.biz.info/duder.json"
       done()
     .done()
