@@ -347,7 +347,7 @@ unique for all our packages so we use it to determine the URL and name callback.
       <span class="keyword">if</span> (match = path.match(<span class="regexp">/([^\/]*)\/([^\:]*)\:(.*)/</span>))
         [callback, user, repo, branch] = match
 
-        url = <span class="string">"http://<span class="subst">#{user}</span>.github.io/<span class="subst">#{repo}</span>/<span class="subst">#{branch}</span>.json.js"</span>
+        url = <span class="string">"https://<span class="subst">#{user}</span>.github.io/<span class="subst">#{repo}</span>/<span class="subst">#{branch}</span>.json.js"</span>
 
         Q($.ajax
           url: url
