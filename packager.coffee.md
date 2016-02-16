@@ -37,7 +37,7 @@ Dependencies
 Helpers
 -------
 
-The path to the published jsonp script. This is the primary build product and is
+The path to the published package json. This is the primary build product and is
 used when requiring in other packages and running standalone html.
 
     jsonPath = ({repository:{branch}}) ->
@@ -136,16 +136,9 @@ If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.
 
 We also handle a Github repo dependency such as `STRd6/issues:master`.
-This uses JSONP to load the package from the gh-pages branch of the given repo.
+This loads the package from the published gh-pages branch of the given repo.
 
-`STRd6/issues:master` will be accessible at `http://strd6.github.io/issues/master.json.js`.
-The callback is the same as the repo info string: `window["STRd6/issues:master"](... DATA ...)`
-
-Why all the madness? Github pages doesn't allow CORS right now, so we need to use
-the JSONP hack to work around it. Because the files are static we can't allow the
-server to generate a wrapper in response to our query string param so we need to
-work out a unique one per file ahead of time. The `<user>/<repo>:<ref>` string is
-unique for all our packages so we use it to determine the URL and name callback.
+`STRd6/issues:master` will be accessible at `http://strd6.github.io/issues/master.json`.
 
     fetchDependency = MemoizePromise (path) ->
       if typeof path is "string"
@@ -213,7 +206,7 @@ Docs are generated and placed in `docs` directory as a sibling to `index.html`.
 
 An application manifest is served up as a sibling to `index.html` as well.
 
-The `.json.js` build product is placed into the root level, as siblings to the
+The `.json` build product is placed into the root level, as siblings to the
 folder containing `index.html`. If this branch is the default then these build
 products are placed as siblings to `index.html`
 
