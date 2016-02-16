@@ -103,7 +103,7 @@ us to use a simplified Node.js style <code>require</code> from the browser.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>The path to the published jsonp script. This is the primary build product and is
+              <p>The path to the published package json. This is the primary build product and is
 used when requiring in other packages and running standalone html.</p>
 
             </div>
@@ -273,14 +273,8 @@ the remote script dependencies of this build.</p>
               <p>If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.</p>
 <p>We also handle a Github repo dependency such as <code>STRd6/issues:master</code>.
-This uses JSONP to load the package from the gh-pages branch of the given repo.</p>
-<p><code>STRd6/issues:master</code> will be accessible at <code>http://strd6.github.io/issues/master.json.js</code>.
-The callback is the same as the repo info string: <code>window[&quot;STRd6/issues:master&quot;](... DATA ...)</code></p>
-<p>Why all the madness? Github pages doesn&#39;t allow CORS right now, so we need to use
-the JSONP hack to work around it. Because the files are static we can&#39;t allow the
-server to generate a wrapper in response to our query string param so we need to
-work out a unique one per file ahead of time. The <code>&lt;user&gt;/&lt;repo&gt;:&lt;ref&gt;</code> string is
-unique for all our packages so we use it to determine the URL and name callback.</p>
+This loads the package from the published gh-pages branch of the given repo.</p>
+<p><code>STRd6/issues:master</code> will be accessible at <code>http://strd6.github.io/issues/master.json</code>.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">fetchDependency = MemoizePromise (path) -&gt;
@@ -374,7 +368,7 @@ used as a dependency in other packages.</p>
 if our ref is the default branch.</p>
 <p>Docs are generated and placed in <code>docs</code> directory as a sibling to <code>index.html</code>.</p>
 <p>An application manifest is served up as a sibling to <code>index.html</code> as well.</p>
-<p>The <code>.json.js</code> build product is placed into the root level, as siblings to the
+<p>The <code>.json</code> build product is placed into the root level, as siblings to the
 folder containing <code>index.html</code>. If this branch is the default then these build
 products are placed as siblings to <code>index.html</code></p>
 <p>The optional second argument is an array of files to be added to the final
