@@ -32,9 +32,7 @@ us to use a simplified Node.js style `require` from the browser.
 Dependencies
 ------------
 
-    Q = require "q"
-
-    MemoizePromise = require "memoize_promise"
+    MemoizePromise = require "./memoize_promise"
 
 Helpers
 -------
@@ -42,8 +40,8 @@ Helpers
 The path to the published jsonp script. This is the primary build product and is
 used when requiring in other packages and running standalone html.
 
-    jsonpScriptPath = ({repository:{branch}}) ->
-      "#{branch}.json.js"
+    jsonPath = ({repository:{branch}}) ->
+      "#{branch}.json"
 
 Check if repository is publishing to default branch.
 
@@ -53,31 +51,28 @@ Check if repository is publishing to default branch.
 
       branch is repository.default_branch
 
-Relative package script tag.
-
-    relativePackageScript = (pkg) ->
-      path = relativePackageScriptPath(pkg)
-
-      "<script src=#{JSON.stringify(path)}><\/script>"
-
-    relativePackageScriptPath = (pkg) ->
+    relativePackagePath = (pkg) ->
       if isDefault(pkg)
-        jsonpScriptPath(pkg)
+        jsonPath(pkg)
       else
-        "../#{jsonpScriptPath(pkg)}"
+        "../#{jsonPath(pkg)}"
 
 Launcher
 
     launcherScript = (pkg) ->
       """
         <script>
-          window["#{jsonpFnName(pkg)}"] = function(PACKAGE) {
-            delete window["#{jsonpFnName(pkg)}"];
-            var oldRequire = window.Require;
-            #{PACKAGE.dependencies.require.distribution.main.content};
-            var require = Require.generateFor(PACKAGE);
-            window.Require = oldRequire;
-            require('./' + PACKAGE.entryPoint);
+          xhr = new XMLHttpRequest;
+          url = #{JSON.stringify(relativePackagePath(pkg))};
+          xhr.open("GET", url, true);
+          xhr.responseType = "json";
+          xhr.onload = function() {
+            (function(PACKAGE) {
+              var src = #{JSON.stringify(PACKAGE.dependencies.require.distribution.main.content)};
+              var Require = new Function("PACKAGE", "return " + src)({distribution: {main: {content: src}}});
+              var require = Require.generateFor(PACKAGE);
+              require('./' + PACKAGE.entryPoint);
+            })(xhr.response)
           };
         <\/script>
       """
@@ -88,7 +83,7 @@ Launcher
 Create a rejected promise with the given message.
 
     reject = (message) ->
-      Q.fcall -> throw message
+      Promise.reject new Error message
 
 A standalone html page for a package.
 
@@ -102,7 +97,6 @@ A standalone html page for a package.
           </head>
           <body>
             #{launcherScript(pkg)}
-            #{relativePackageScript(pkg)}
           </body>
         </html>
       """
@@ -117,7 +111,7 @@ An HTML5 cache manifest for a package.
 
         CACHE:
         index.html
-        #{relativePackageScriptPath(pkg)}
+        #{relativePackagePath(pkg)}
         #{(pkg.remoteDependencies or []).join("\n")}
 
         NETWORK:
@@ -138,19 +132,6 @@ the remote script dependencies of this build.
     dependencyScripts = (remoteDependencies=[]) ->
       remoteDependencies.map(makeScript).join("\n")
 
-JSONp Function name
-
-    jsonpFnName = ({repository}) ->
-      "#{repository.full_name}:#{repository.branch}"
-
-Wraps the given data in a JSONP function wrapper. This allows us to host our
-packages on Github pages and get around any same origin issues by using JSONP.
-
-    jsonpWrapper = (pkg, data) ->
-      """
-        window["#{jsonpFnName(pkg)}"](#{data});
-      """
-
 If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.
 
@@ -169,31 +150,26 @@ unique for all our packages so we use it to determine the URL and name callback.
     fetchDependency = MemoizePromise (path) ->
       if typeof path is "string"
         if startsWith(path, "http")
-          Q($.getJSON(path))
-          .fail ({status, responseText}) ->
+          ajax.getJSON(path)
+          .catch ({status, response}) ->
             switch status
               when 0
                 message = "Aborted"
               when 404
                 message = "Not Found"
               else
-                throw responseText
+                throw new Error response
 
             throw "#{status} #{message}: #{path}"
         else
           if (match = path.match(/([^\/]*)\/([^\:]*)\:(.*)/))
             [callback, user, repo, branch] = match
 
-            url = "https://#{user}.github.io/#{repo}/#{branch}.json.js"
+            url = "https://#{user}.github.io/#{repo}/#{branch}.json"
 
-            Q($.ajax
-              url: url
-              dataType: "jsonp"
-              jsonpCallback: callback
-              cache: true
-              timeout: 1900
-            ).fail ->
-              throw "Failed to load package '#{path}' from #{url}"
+            ajax.getJSON(url)
+            .catch ->
+              throw new Error "Failed to load package '#{path}' from #{url}"
           else
             reject """
               Failed to parse repository info string #{path}, be sure it's in the
@@ -206,11 +182,14 @@ unique for all our packages so we use it to determine the URL and name callback.
 Implementation
 --------------
 
+    Ajax = require "ajax"
+    ajax = Ajax()
+
     Packager =
       collectDependencies: (dependencies) ->
         names = Object.keys(dependencies)
 
-        Q.all(names.map (name) ->
+        Promise.all(names.map (name) ->
           value = dependencies[name]
 
           fetchDependency value
@@ -262,7 +241,7 @@ package.
 
         json = JSON.stringify(pkg, null, 2)
 
-        add jsonpScriptPath(pkg), jsonpWrapper(pkg, json)
+        add jsonPath(pkg), json
 
         return files
 
@@ -284,6 +263,6 @@ Generates a standalone page for testing the app.
           <\/script>
         """
 
-      relativePackageScriptPath: relativePackageScriptPath
+      relativePackagePath: relativePackagePath
 
     module.exports = Packager

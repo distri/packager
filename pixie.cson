@@ -1,9 +1,5 @@
-version: "0.6.0"
+version: "0.7.0-pre.0"
 entryPoint: "packager"
-remoteDependencies: [
-  "https://code.jquery.com/jquery-1.11.0.min.js"
-]
 dependencies:
-  require: "distri/require:v0.5.0"
-  memoize_promise: "distri/memoize_promise:v0.1.0"
-  q: "distri/q:v1.0.1"
+  ajax: "distri/ajax:v0.1.4"
+  require: "distri/require:v0.5.2"
