@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# 1455596609686
+
+CACHE:
+index.html
+../remove-jsonp.json.js
+
+
+NETWORK:
+https://*
+http://*
+*
