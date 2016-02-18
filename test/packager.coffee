@@ -7,8 +7,6 @@ describe "Packager", ->
     pkg = Packager.standAlone(PACKAGE)
     relativePackagePath = Packager.relativePackagePath(PACKAGE)
 
-    console.log pkg
-
     it "should have the correct manifest links", ->
       manifest = pkg[1].content
 
@@ -18,14 +16,15 @@ describe "Packager", ->
     it "should have the correct script links", ->
       html = pkg[0].content
 
-      assert html.match ///src="#{relativePackagePath}"///
+      assert html.match ///"#{relativePackagePath}"///
 
   it "should fail to build if a resource doesn't exist", (done) ->
     Packager.collectDependencies(
       notFound: "distri/does_not_exist:v0.0.0"
     ).catch (message) ->
-      assert.equal message, "Failed to load package 'distri/does_not_exist:v0.0.0' from https://distri.github.io/does_not_exist/v0.0.0.json.js"
+      assert.equal message, "Error: Failed to load package 'distri/does_not_exist:v0.0.0' from https://distri.github.io/does_not_exist/v0.0.0.json"
       done()
+    .catch done
 
   it "should be able to collect remote dependencies", (done) ->
     Packager.collectDependencies(dependencies)
