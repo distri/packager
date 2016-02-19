@@ -1,4 +1,4 @@
-version: "0.7.0-pre.0"
+version: "0.7.0-pre.1"
 entryPoint: "packager"
 dependencies:
   ajax: "distri/ajax:v0.1.4"

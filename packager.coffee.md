@@ -74,6 +74,7 @@ Launcher
               require('./' + PACKAGE.entryPoint);
             })(xhr.response)
           };
+          xhr.send();
         <\/script>
       """
 
