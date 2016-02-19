@@ -1,4 +1,0 @@
-TODO
-====
-
-- Remove jQuery dependency.
