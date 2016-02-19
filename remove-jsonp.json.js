@@ -32,7 +32,7 @@ window["distri/packager:remove-jsonp"]({
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.7.0-pre.1\"\nentryPoint: \"packager\"\ndependencies:\n  ajax: \"distri/ajax:v0.1.4\"\n  require: \"distri/require:v0.5.2\"\n",
+      "content": "version: \"0.7.0\"\nentryPoint: \"packager\"\ndependencies:\n  ajax: \"distri/ajax:v0.1.4\"\n  require: \"distri/require:v0.5.2\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -56,7 +56,7 @@ window["distri/packager:remove-jsonp"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.7.0-pre.1\",\"entryPoint\":\"packager\",\"dependencies\":{\"ajax\":\"distri/ajax:v0.1.4\",\"require\":\"distri/require:v0.5.2\"}};",
+      "content": "module.exports = {\"version\":\"0.7.0\",\"entryPoint\":\"packager\",\"dependencies\":{\"ajax\":\"distri/ajax:v0.1.4\",\"require\":\"distri/require:v0.5.2\"}};",
       "type": "blob"
     },
     "test/packager": {
@@ -68,7 +68,7 @@ window["distri/packager:remove-jsonp"]({
   "progenitor": {
     "url": "https://danielx.net/editor/"
   },
-  "version": "0.7.0-pre.1",
+  "version": "0.7.0",
   "entryPoint": "packager",
   "repository": {
     "branch": "remove-jsonp",
