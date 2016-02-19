@@ -79,9 +79,7 @@ us to use a simplified Node.js style <code>require</code> from the browser.</p>
               </div>
               
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">Q = require <span class="string">"q"</span>
-
-MemoizePromise = require <span class="string">"memoize_promise"</span></code></pre>
+            <div class="content"><pre><code class="lang-coffeescript">MemoizePromise = require <span class="string">"./memoize_promise"</span></code></pre>
 </div>
         </li>
         
@@ -105,12 +103,12 @@ MemoizePromise = require <span class="string">"memoize_promise"</span></code></p
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>The path to the published jsonp script. This is the primary build product and is
+              <p>The path to the published package json. This is the primary build product and is
 used when requiring in other packages and running standalone html.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">jsonpScriptPath</span></span> = ({repository:{branch}}) -&gt;
-  <span class="string">"<span class="subst">#{branch}</span>.json.js"</span></code></pre>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">jsonPath</span></span> = ({repository:{branch}}) -&gt;
+  <span class="string">"<span class="subst">#{branch}</span>.json"</span></code></pre>
 </div>
         </li>
         
@@ -127,7 +125,13 @@ used when requiring in other packages and running standalone html.</p>
   {repository} = pkg
   {branch} = repository
 
-  branch <span class="keyword">is</span> repository.default_branch</code></pre>
+  branch <span class="keyword">is</span> repository.default_branch
+
+<span class="function"><span class="title">relativePackagePath</span></span> = (pkg) -&gt;
+  <span class="keyword">if</span> isDefault(pkg)
+    jsonPath(pkg)
+  <span class="keyword">else</span>
+    <span class="string">"../<span class="subst">#{jsonPath(pkg)}</span>"</span></code></pre>
 </div>
         </li>
         
@@ -137,42 +141,25 @@ used when requiring in other packages and running standalone html.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Relative package script tag.</p>
-
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">relativePackageScript</span></span> = (pkg) -&gt;
-  path = relativePackageScriptPath(pkg)
-
-  <span class="string">"&lt;script src=<span class="subst">#{JSON.stringify(path)}</span>&gt;&lt;\/script&gt;"</span>
-
-<span class="function"><span class="title">relativePackageScriptPath</span></span> = (pkg) -&gt;
-  <span class="keyword">if</span> isDefault(pkg)
-    jsonpScriptPath(pkg)
-  <span class="keyword">else</span>
-    <span class="string">"../<span class="subst">#{jsonpScriptPath(pkg)}</span>"</span></code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-9">&#182;</a>
-              </div>
               <p>Launcher</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">launcherScript</span></span> = (pkg) -&gt;
   <span class="string">"""
     &lt;script&gt;
-      window["<span class="subst">#{jsonpFnName(pkg)}</span>"] = function(PACKAGE) {
-        delete window["<span class="subst">#{jsonpFnName(pkg)}</span>"];
-        var oldRequire = window.Require;
-        <span class="subst">#{PACKAGE.dependencies.require.distribution.main.content}</span>;
-        var require = Require.generateFor(PACKAGE);
-        window.Require = oldRequire;
-        require('./' + PACKAGE.entryPoint);
+      xhr = new XMLHttpRequest;
+      url = <span class="subst">#{JSON.stringify(relativePackagePath(pkg))}</span>;
+      xhr.open("GET", url, true);
+      xhr.responseType = "json";
+      xhr.onload = function() {
+        (function(PACKAGE) {
+          var src = <span class="subst">#{JSON.stringify(PACKAGE.dependencies.require.distribution.main.content)}</span>;
+          var Require = new Function("PACKAGE", "return " + src)({distribution: {main: {content: src}}});
+          var require = Require.generateFor(PACKAGE);
+          require('./' + PACKAGE.entryPoint);
+        })(xhr.response)
       };
+      xhr.send();
     &lt;\/script&gt;
   """</span>
 
@@ -182,24 +169,24 @@ used when requiring in other packages and running standalone html.</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-9">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Create a rejected promise with the given message.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">reject</span></span> = (message) -&gt;
-  Q.fcall -&gt; <span class="keyword">throw</span> message</code></pre>
+  Promise.reject <span class="keyword">new</span> Error message</code></pre>
 </div>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-10">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>A standalone html page for a package.</p>
 
@@ -214,7 +201,6 @@ used when requiring in other packages and running standalone html.</p>
       &lt;/head&gt;
       &lt;body&gt;
         <span class="subst">#{launcherScript(pkg)}</span>
-        <span class="subst">#{relativePackageScript(pkg)}</span>
       &lt;/body&gt;
     &lt;/html&gt;
   """</span></code></pre>
@@ -222,10 +208,10 @@ used when requiring in other packages and running standalone html.</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-11">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>An HTML5 cache manifest for a package.</p>
 
@@ -238,7 +224,7 @@ used when requiring in other packages and running standalone html.</p>
 
     CACHE:
     index.html
-    <span class="subst">#{relativePackageScriptPath(pkg)}</span>
+    <span class="subst">#{relativePackagePath(pkg)}</span>
     <span class="subst">#{(pkg.remoteDependencies <span class="keyword">or</span> []).join("\n")}</span>
 
     NETWORK:
@@ -250,10 +236,10 @@ used when requiring in other packages and running standalone html.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-12">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p><code>makeScript</code> returns a string representation of a script tag that has a src
 attribute.</p>
@@ -265,10 +251,10 @@ attribute.</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-13">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p><code>dependencyScripts</code> returns a string containing the script tags that are
 the remote script dependencies of this build.</p>
@@ -280,83 +266,41 @@ the remote script dependencies of this build.</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-14">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-15">&#182;</a>
-              </div>
-              <p>JSONp Function name</p>
-
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">jsonpFnName</span></span> = ({repository}) -&gt;
-  <span class="string">"<span class="subst">#{repository.full_name}</span>:<span class="subst">#{repository.branch}</span>"</span></code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-16">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-16">&#182;</a>
-              </div>
-              <p>Wraps the given data in a JSONP function wrapper. This allows us to host our
-packages on Github pages and get around any same origin issues by using JSONP.</p>
-
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">jsonpWrapper</span></span> = (pkg, data) -&gt;
-  <span class="string">"""
-    window["<span class="subst">#{jsonpFnName(pkg)}</span>"](<span class="subst">#{data}</span>);
-  """</span></code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-17">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>If our string is an absolute URL then we assume that the server is CORS enabled
 and we can make a cross origin request to collect the JSON data.</p>
 <p>We also handle a Github repo dependency such as <code>STRd6/issues:master</code>.
-This uses JSONP to load the package from the gh-pages branch of the given repo.</p>
-<p><code>STRd6/issues:master</code> will be accessible at <code>http://strd6.github.io/issues/master.json.js</code>.
-The callback is the same as the repo info string: <code>window[&quot;STRd6/issues:master&quot;](... DATA ...)</code></p>
-<p>Why all the madness? Github pages doesn&#39;t allow CORS right now, so we need to use
-the JSONP hack to work around it. Because the files are static we can&#39;t allow the
-server to generate a wrapper in response to our query string param so we need to
-work out a unique one per file ahead of time. The <code>&lt;user&gt;/&lt;repo&gt;:&lt;ref&gt;</code> string is
-unique for all our packages so we use it to determine the URL and name callback.</p>
+This loads the package from the published gh-pages branch of the given repo.</p>
+<p><code>STRd6/issues:master</code> will be accessible at <code>http://strd6.github.io/issues/master.json</code>.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">fetchDependency = MemoizePromise (path) -&gt;
   <span class="keyword">if</span> <span class="keyword">typeof</span> path <span class="keyword">is</span> <span class="string">"string"</span>
     <span class="keyword">if</span> startsWith(path, <span class="string">"http"</span>)
-      Q($.getJSON(path))
-      .fail ({status, responseText}) -&gt;
+      ajax.getJSON(path)
+      .<span class="keyword">catch</span> ({status, response}) -&gt;
         <span class="keyword">switch</span> status
           <span class="keyword">when</span> <span class="number">0</span>
             message = <span class="string">"Aborted"</span>
           <span class="keyword">when</span> <span class="number">404</span>
             message = <span class="string">"Not Found"</span>
           <span class="keyword">else</span>
-            <span class="keyword">throw</span> responseText
+            <span class="keyword">throw</span> <span class="keyword">new</span> Error response
 
         <span class="keyword">throw</span> <span class="string">"<span class="subst">#{status}</span> <span class="subst">#{message}</span>: <span class="subst">#{path}</span>"</span>
     <span class="keyword">else</span>
       <span class="keyword">if</span> (match = path.match(<span class="regexp">/([^\/]*)\/([^\:]*)\:(.*)/</span>))
         [callback, user, repo, branch] = match
 
-        url = <span class="string">"https://<span class="subst">#{user}</span>.github.io/<span class="subst">#{repo}</span>/<span class="subst">#{branch}</span>.json.js"</span>
+        url = <span class="string">"https://<span class="subst">#{user}</span>.github.io/<span class="subst">#{repo}</span>/<span class="subst">#{branch}</span>.json"</span>
 
-        Q($.ajax
-          url: url
-          dataType: <span class="string">"jsonp"</span>
-          jsonpCallback: callback
-          cache: <span class="literal">true</span>
-          timeout: <span class="number">1900</span>
-        ).fail -&gt;
-          <span class="keyword">throw</span> <span class="string">"Failed to load package '<span class="subst">#{path}</span>' from <span class="subst">#{url}</span>"</span>
+        ajax.getJSON(url)
+        .<span class="keyword">catch</span> -&gt;
+          <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"Failed to load package '<span class="subst">#{path}</span>' from <span class="subst">#{url}</span>"</span>
       <span class="keyword">else</span>
         reject <span class="string">"""
           Failed to parse repository info string <span class="subst">#{path}</span>, be sure it's in the
@@ -369,10 +313,10 @@ unique for all our packages so we use it to determine the URL and name callback.
         </li>
         
         
-        <li id="section-18">
+        <li id="section-15">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <h2 id="implementation">Implementation</h2>
 
@@ -383,18 +327,21 @@ unique for all our packages so we use it to determine the URL and name callback.
         </li>
         
         
-        <li id="section-19">
+        <li id="section-16">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">Packager =
+            <div class="content"><pre><code class="lang-coffeescript">Ajax = require <span class="string">"ajax"</span>
+ajax = Ajax()
+
+Packager =
   collectDependencies: (dependencies) -&gt;
     names = Object.keys(dependencies)
 
-    Q.all(names.map (name) -&gt;
+    Promise.all(names.map (name) -&gt;
       value = dependencies[name]
 
       fetchDependency value
@@ -410,10 +357,10 @@ unique for all our packages so we use it to determine the URL and name callback.
         </li>
         
         
-        <li id="section-20">
+        <li id="section-17">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <p>Create the standalone components of this package. An html page that loads the
 main entry point for demonstration purposes and a json package that can be
@@ -422,7 +369,7 @@ used as a dependency in other packages.</p>
 if our ref is the default branch.</p>
 <p>Docs are generated and placed in <code>docs</code> directory as a sibling to <code>index.html</code>.</p>
 <p>An application manifest is served up as a sibling to <code>index.html</code> as well.</p>
-<p>The <code>.json.js</code> build product is placed into the root level, as siblings to the
+<p>The <code>.json</code> build product is placed into the root level, as siblings to the
 folder containing <code>index.html</code>. If this branch is the default then these build
 products are placed as siblings to <code>index.html</code></p>
 <p>The optional second argument is an array of files to be added to the final
@@ -450,17 +397,17 @@ package.</p>
 
     json = JSON.stringify(pkg, <span class="literal">null</span>, <span class="number">2</span>)
 
-    add jsonpScriptPath(pkg), jsonpWrapper(pkg, json)
+    add jsonPath(pkg), json
 
     <span class="keyword">return</span> files</code></pre>
 </div>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-18">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <p>Generates a standalone page for testing the app.</p>
 
@@ -481,7 +428,7 @@ package.</p>
       &lt;\/script&gt;
     """</span>
 
-  relativePackageScriptPath: relativePackageScriptPath
+  relativePackagePath: relativePackagePath
 
 module.exports = Packager</code></pre>
 </div>
@@ -490,8 +437,7 @@ module.exports = Packager</code></pre>
     </ul>
   </div>
   <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script><script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script><script>
   (function() {
   var ErrorReporter, bindUpdates, createEditor, exec, findInteractiveElements, readShebang, runners;
 
